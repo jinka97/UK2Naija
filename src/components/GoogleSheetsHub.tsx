@@ -114,10 +114,19 @@ function doPost(e) {
   lock.tryLock(15000); // Wait up to 15s to ensure concurrent requests never clash
 
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("UK2Naija_Orders") || ss.getActiveSheet();
+    var payload = JSON.parse(e.postData.contents);
+    var row = payload.data || {};
 
-    // Auto-create formatted header row if sheet is brand new
+    var targetSheetName = payload.sheet || payload.sheetName || row.sheetName || "UK_Source_Orders_11-2026";
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(targetSheetName);
+
+    // If target sheet tab does not exist yet, create it automatically
+    if (!sheet) {
+      sheet = ss.insertSheet(targetSheetName);
+    }
+
+    // Auto-create formatted dark header row if sheet is brand new
     if (sheet.getLastRow() === 0) {
       var headers = [
         "Timestamp (UTC)",
@@ -143,9 +152,6 @@ function doPost(e) {
       headerRange.setHorizontalAlignment("center");
       sheet.setFrozenRows(1);
     }
-
-    var payload = JSON.parse(e.postData.contents);
-    var row = payload.data;
 
     // Validate that essential fields exist to guarantee accurate receipt
     if (!row.requestId || !row.customerName) {
@@ -210,8 +216,8 @@ function doPost(e) {
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "online",
-    service: "UK Source Nigeria Google Sheets Webhook Sink",
-    message: "Ready to receive customer request payloads from UK Source assistant."
+    service: "UK2Naija Google Sheets Webhook Sink",
+    message: "Ready to receive customer request payloads from UK2Naija assistant into UK_Source_Orders_11-2026."
   })).setMimeType(ContentService.MimeType.JSON);
 }`;
 
@@ -377,7 +383,7 @@ function doGet(e) {
                     >
                       sheets.new
                     </a>{' '}
-                    and name it <em>"UK2Naija Orders"</em>.
+                    and name it <em>"UK2Naija Orders"</em>. The script will automatically log orders into the sheet tab <strong>UK_Source_Orders_11-2026</strong>.
                   </div>
                 </div>
 

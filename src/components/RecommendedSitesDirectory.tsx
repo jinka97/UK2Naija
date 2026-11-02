@@ -50,6 +50,8 @@ export const RecommendedSitesDirectory: React.FC<RecommendedSitesDirectoryProps>
 
   const categories = [
     'all',
+    'Kids, Stationery & School',
+    'Designer Clearance & Fashion',
     'Fashion & Schoolwear',
     'Beauty, Pharmacy & Baby',
     'Tech & Electronics',

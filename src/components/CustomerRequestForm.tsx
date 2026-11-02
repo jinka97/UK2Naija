@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { CustomerRequest, ProductItem, BudgetOption, RecommendedStore } from '../types';
 import { createNewRequest, generateSampleCopyText, BENCHMARK_FX_RATE } from '../services/storage';
+import { UK2NaijaLogo } from './UK2NaijaLogo';
 
 interface CustomerRequestFormProps {
   onRequestSubmitted: (newRequest: CustomerRequest) => void;
@@ -30,31 +31,58 @@ interface CustomerRequestFormProps {
 }
 
 const CATEGORIES = [
+  { name: 'Fashion & Accessories', icon: '👞', examples: 'Next UK, Marks & Spencer, Clarks UK, Ralph Lauren' },
+  { name: 'Kids & School Stationery', icon: '🎒', examples: 'Smiggle backpacks, lunchboxes, school uniforms' },
+  { name: 'Designer Clearance & Luxury', icon: '💎', examples: 'TK Maxx fragrances, designer bags, Le Creuset' },
   { name: 'Beauty & Skincare', icon: '✨', examples: 'Boots Soltan, CeraVe UK, The Ordinary, Elemis' },
   { name: 'Electronics & Audio', icon: '🎧', examples: 'AirPods Pro, MacBook Air, Sony WH-1000XM5, Dyson' },
-  { name: 'Fashion & Accessories', icon: '👞', examples: 'Clarks Originals, Marks & Spencer, Next, Ralph Lauren' },
   { name: 'Baby & Infant Care', icon: '🍼', examples: 'Aptamil Profutura, Kendamil, Cow & Gate, NUK' },
-  { name: 'Health & Pharmacy', icon: '💊', examples: 'Vitabiotics, Holland & Barrett, Littmann, Boots' },
-  { name: 'Home & Appliances', icon: '☕', examples: 'Ninja Air Fryers, DeLonghi, Russell Hobbs, Joseph Joseph' },
 ];
 
 const POPULAR_PRESETS = [
+  {
+    category: 'Kids & School Stationery',
+    title: 'Smiggle Hardtop Scented Pencil Case & Double Decker Lunchbox',
+    brand: 'Smiggle UK',
+    qty: 1,
+    budget: '50-150' as BudgetOption,
+    specs: 'Original UK store release. Embossed character hardtop case & insulated lunchbox with strap.',
+    url: 'https://www.smiggle.co.uk',
+  },
+  {
+    category: 'Fashion & Accessories',
+    title: 'Next UK Pure Cotton School Uniforms & Multipack Rompers',
+    brand: 'Next UK',
+    qty: 2,
+    budget: '50-150' as BudgetOption,
+    specs: 'Age 4-12 years. Teflon stain-resistant finish, pure breathable British cotton stitching.',
+    url: 'https://www.next.co.uk',
+  },
+  {
+    category: 'Designer Clearance & Luxury',
+    title: 'TK Maxx UK Designer Fragrance & Luxury Handbag Sourcing',
+    brand: 'TK Maxx UK',
+    qty: 1,
+    budget: '50-150' as BudgetOption,
+    specs: 'Authentic designer fragrance (Chanel/Dior/Tom Ford) or genuine leather handbag at clearance rate.',
+    url: 'https://www.tkmaxx.com',
+  },
   {
     category: 'Electronics & Audio',
     title: 'Apple AirPods Pro (2nd Generation with MagSafe USB-C)',
     brand: 'Apple',
     qty: 1,
     budget: '150-500' as BudgetOption,
-    specs: 'UK retail specification. Must include UK warranty and original Apple receipt.',
+    specs: 'UK retail specification. Official Apple paper VAT receipt with serial number included.',
     url: 'https://www.apple.com/uk/airpods-pro/',
   },
   {
     category: 'Baby & Infant Care',
     title: 'Aptamil Profutura 1 First Infant Milk (800g x 4 tins)',
-    brand: 'Aptamil / Nutricia UK',
+    brand: 'Boots / Aptamil UK',
     qty: 4,
     budget: '50-150' as BudgetOption,
-    specs: 'Stage 1 (from birth). Fresh UK batch with at least 12 months expiry date.',
+    specs: 'Stage 1 (0-6 months). Fresh UK batch with intact tamper foil and 14+ months expiry.',
     url: 'https://www.boots.com/aptamil-profutura-first-infant-milk-800g',
   },
   {
@@ -63,19 +91,11 @@ const POPULAR_PRESETS = [
     brand: 'Clarks UK',
     qty: 1,
     budget: '50-150' as BudgetOption,
-    specs: 'UK Size 9.5 (EU 44). Classic crepe sole.',
+    specs: 'UK Size 9.5 (EU 44). Classic natural crepe sole with authentic Clarks branded tags.',
     url: 'https://www.clarks.co.uk',
   },
-  {
-    category: 'Beauty & Skincare',
-    title: 'CeraVe Hydrating Cleanser & Moisturising Cream UK Bundle',
-    brand: 'CeraVe UK',
-    qty: 2,
-    budget: 'under50' as BudgetOption,
-    specs: 'UK manufactured batch with European formulation for sensitive skin.',
-    url: 'https://www.boots.com/cerave',
-  },
 ];
+
 
 export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
   onRequestSubmitted,
@@ -374,19 +394,15 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       {/* Hero: Customer Facing Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-medium mb-4 shadow-sm">
-          <span>🇬🇧 UK2Naija</span>
-          <span className="text-slate-400">➔</span>
-          <span>🇳🇬 Nigeria</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span className="text-emerald-300">Live Concierge</span>
+        <div className="mb-5 flex justify-center">
+          <UK2NaijaLogo size="md" />
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
           What would you like us to find?
         </h1>
         <p className="text-slate-600 text-base sm:text-lg max-w-xl mx-auto mb-8">
-          Quality products, sourced directly from the UK, with a personal touch. You request it, we source, verify, and
+          Quality products, sourced directly from verified UK merchants, with a personal touch. You request it, we source, verify, and
           deliver to your door in Nigeria.
         </p>
 
@@ -475,7 +491,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           <span className="font-medium">Need help finding something?</span>
           <span className="text-slate-500">Send us a product link, photo or description on WhatsApp.</span>
           <a
-            href="https://wa.me/447700900123?text=Hello%20UK%20Source!%20I%20need%20help%20finding%20a%20product%20from%20the%20UK%20to%20Nigeria."
+            href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20need%20help%20finding%20a%20product%20from%20the%20UK%20to%20Nigeria."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800 underline ml-1"
@@ -496,7 +512,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-white">Explore Some UK Retailers</span>
               <span className="text-[10px] bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-700">
-                M&S · Next · Boots · John Lewis
+                Smiggle · Next · TK Maxx · M&S · Boots · Apple
               </span>
             </div>
             <p className="text-slate-300 text-xs mt-0.5 max-w-xl">
@@ -572,7 +588,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           </div>
           <span className="text-xs text-slate-500">Click to autofill request form</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {POPULAR_PRESETS.map((preset, idx) => (
             <button
               key={idx}

@@ -247,9 +247,14 @@ export function createNewRequest(newReq: Omit<CustomerRequest, 'id' | 'createdAt
   const updated = [request, ...current];
   saveStoredRequests(updated);
 
+  // Real-time DOM event notification so Admin and App instantly reflect new request
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('uk2n_storage_updated', { detail: request }));
+  }
+
   // Attempt Google Sheets webhook sync if configured
-  syncToGoogleSheets(request).catch(() => {
-    // Non-blocking background sync
+  syncToGoogleSheets(request).catch((err) => {
+    console.warn('Google Sheets background sync notice:', err);
   });
 
   return request;
@@ -273,6 +278,10 @@ export function updateRequestStatus(
   current[index] = updatedReq;
   saveStoredRequests(current);
 
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('uk2n_storage_updated', { detail: updatedReq }));
+  }
+
   syncToGoogleSheets(updatedReq).catch(() => {
     // Non-blocking
   });
@@ -282,6 +291,9 @@ export function updateRequestStatus(
 
 export function resetToSeedData(): CustomerRequest[] {
   saveStoredRequests(INITIAL_SEED_REQUESTS);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('uk2n_storage_updated'));
+  }
   return INITIAL_SEED_REQUESTS;
 }
 
@@ -290,9 +302,15 @@ export function getGoogleSheetsConfig(): GoogleSheetsConfig {
     const raw = localStorage.getItem(SHEETS_CONFIG_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      // Migrate legacy sheet names to required tab: UK_Source_Orders_11-2026
+      const sheetName =
+        parsed.sheetName && parsed.sheetName !== 'UK2Naija_Orders'
+          ? parsed.sheetName
+          : DEFAULT_SHEET_TAB_NAME;
+
       return {
         webhookUrl: parsed.webhookUrl || DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL,
-        sheetName: parsed.sheetName || DEFAULT_SHEET_TAB_NAME,
+        sheetName,
         autoSync: parsed.autoSync !== undefined ? parsed.autoSync : true,
         lastSyncedAt: parsed.lastSyncedAt,
       };
@@ -317,6 +335,7 @@ export function saveGoogleSheetsConfig(config: GoogleSheetsConfig): void {
 
 /**
  * Syncs a request to Google Sheets using a Google Apps Script Webhook
+ * Explicitly targets the UK_Source_Orders_11-2026 sheet tab
  */
 export async function syncToGoogleSheets(request: CustomerRequest): Promise<boolean> {
   const config = getGoogleSheetsConfig();
@@ -325,9 +344,11 @@ export async function syncToGoogleSheets(request: CustomerRequest): Promise<bool
   }
 
   try {
+    const targetSheet = config.sheetName || DEFAULT_SHEET_TAB_NAME || 'UK_Source_Orders_11-2026';
     const payload = {
       action: 'append_or_update',
-      sheet: config.sheetName || DEFAULT_SHEET_TAB_NAME || 'UK2Naija_Orders',
+      sheet: targetSheet,
+      sheetName: targetSheet,
       data: {
         timestamp: new Date().toISOString(),
         requestId: request.id,
@@ -345,6 +366,7 @@ export async function syncToGoogleSheets(request: CustomerRequest): Promise<bool
         quoteNgn: request.quotation ? `₦${request.quotation.totalNgn.toLocaleString()}` : 'Pending',
         retailer: request.quotation?.retailerFound || 'Not yet assigned',
         notes: request.adminNotes || request.items[0]?.specs || '',
+        sheetName: targetSheet,
       },
     };
 
@@ -464,11 +486,68 @@ ${item.brand ? `- Preferred Brand: ${item.brand}\n` : ''}${
 *Requested Items:*
 ${itemsText}
 ----------------------------------------
-*Generated via UK Source Nigeria Assistant*
-_Direct sourcing from verified UK retailers to Nigeria._`;
+*Generated via UK2Naija Direct Sourcing Assistant*
+_Direct bidirectional sourcing between verified UK retailers and Nigeria._`;
 }
 
 export const INITIAL_RECOMMENDED_STORES: RecommendedStore[] = [
+  {
+    id: 'store-smiggle',
+    name: 'Smiggle UK',
+    url: 'https://www.smiggle.co.uk',
+    category: 'Kids, Stationery & School',
+    tagline: 'World-famous Australian-British kids stationery: scented pencil cases, double-decker lunchboxes, pop-out water bottles, and backpacks.',
+    badge: 'Top Pick: Scented School Gear & Bags',
+    popularItems: [
+      'Hardtop embossed scented character pencil cases',
+      'Dual-compartment double-decker insulated lunchboxes',
+      'Silicone spout pop-out drink bottles',
+      'Junior & senior school backpacks with padded laptop sleeves',
+    ],
+    logoText: 'SMIGGLE',
+    accentColor: 'from-fuchsia-600 to-pink-600',
+    nigerianBuyerTip:
+      'Massive status symbol in Lagos and Abuja private schools. Buying direct from UK stores gets you exclusive seasonal releases at true retail prices.',
+    isFeatured: true,
+  },
+  {
+    id: 'store-next',
+    name: 'Next UK',
+    url: 'https://www.next.co.uk',
+    category: 'Fashion & Schoolwear',
+    tagline: 'Britain’s favorite high-street department store: modern family apparel, stylish children’s occasionwear, and chic homeware.',
+    badge: 'Top Pick: Kids & Family Fashion',
+    popularItems: [
+      'Multi-pack baby sleepsuits & rompers (100% pure cotton)',
+      'Tailored boys wedding suits & girls occasion party dresses',
+      'Signature real leather chelsea & ankle boots',
+      'Stain-resistant school trousers, polo shirts & pleated pinafores',
+    ],
+    logoText: 'NEXT',
+    accentColor: 'from-slate-900 to-neutral-800',
+    nigerianBuyerTip:
+      'Next kids’ collections are vibrant and durable; their multi-packs give incredible value for Lagos and Abuja families.',
+    isFeatured: true,
+  },
+  {
+    id: 'store-tkmaxx',
+    name: 'TK Maxx UK',
+    url: 'https://www.tkmaxx.com',
+    category: 'Designer Clearance & Fashion',
+    tagline: 'Big brands and designer labels at up to 60% less than RRP: authentic perfumes, designer handbags, luggage, and luxury cookware.',
+    badge: 'Designer Labels at Clearance Prices',
+    popularItems: [
+      'Designer perfumes & aftershaves (Chanel, Dior, Tom Ford, Creed)',
+      'Luxury designer leather handbags & crossbody totes',
+      'Le Creuset & MasterClass heavy cast iron Dutch ovens',
+      'Branded trainers, activewear & luggage sets (Samsonite, Nike)',
+    ],
+    logoText: 'TK MAXX',
+    accentColor: 'from-red-700 to-rose-900',
+    nigerianBuyerTip:
+      'The ultimate UK bargain treasure hunt. Sourced directly from London stores with paper receipts proving genuine designer brand authenticity.',
+    isFeatured: true,
+  },
   {
     id: 'store-ms',
     name: 'Marks & Spencer (M&S)',
@@ -486,25 +565,6 @@ export const INITIAL_RECOMMENDED_STORES: RecommendedStore[] = [
     accentColor: 'from-emerald-900 to-slate-900',
     nigerianBuyerTip:
       'Legendary among Nigerian parents: M&S cotton school uniforms and vests endure hot washes without losing shape or fading.',
-    isFeatured: true,
-  },
-  {
-    id: 'store-next',
-    name: 'Next UK',
-    url: 'https://www.next.co.uk',
-    category: 'Fashion & Schoolwear',
-    tagline: 'Britain’s favorite high-street department store: modern family apparel, stylish children’s occasionwear, and chic homeware.',
-    badge: 'Top Pick: Kids & Family Fashion',
-    popularItems: [
-      'Multi-pack baby sleepsuits & rompers',
-      'Tailored boys wedding suits & girls party dresses',
-      'Signature real leather chelsea & ankle boots',
-      'Luxury velvet cushions & Egyptian cotton bedding',
-    ],
-    logoText: 'NEXT',
-    accentColor: 'from-slate-900 to-neutral-800',
-    nigerianBuyerTip:
-      'Next kids’ collections are vibrant and durable; their multi-packs give incredible value for Lagos and Abuja families.',
     isFeatured: true,
   },
   {
@@ -642,7 +702,7 @@ export const INITIAL_RECOMMENDED_STORES: RecommendedStore[] = [
   },
 ];
 
-const RECOMMENDED_STORES_KEY = 'uk_source_recommended_stores_v1';
+const RECOMMENDED_STORES_KEY = 'uk_source_recommended_stores_v2';
 
 export function getStoredRecommendedStores(): RecommendedStore[] {
   try {
@@ -651,7 +711,15 @@ export function getStoredRecommendedStores(): RecommendedStore[] {
       localStorage.setItem(RECOMMENDED_STORES_KEY, JSON.stringify(INITIAL_RECOMMENDED_STORES));
       return INITIAL_RECOMMENDED_STORES;
     }
-    return JSON.parse(raw);
+    const parsed: RecommendedStore[] = JSON.parse(raw);
+    // Ensure all initial stores like Smiggle & TK Maxx exist
+    const hasSmiggle = parsed.some((s) => s.id === 'store-smiggle' || s.name.toLowerCase().includes('smiggle'));
+    const hasTkMaxx = parsed.some((s) => s.id === 'store-tkmaxx' || s.name.toLowerCase().includes('tk maxx'));
+    if (!hasSmiggle || !hasTkMaxx) {
+      localStorage.setItem(RECOMMENDED_STORES_KEY, JSON.stringify(INITIAL_RECOMMENDED_STORES));
+      return INITIAL_RECOMMENDED_STORES;
+    }
+    return parsed;
   } catch {
     return INITIAL_RECOMMENDED_STORES;
   }

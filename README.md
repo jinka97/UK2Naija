@@ -1,270 +1,86 @@
-# UK2Naija 🇬🇧 ➔ 🇳🇬
+# UK2Naija 🇬🇧 ⇄ 🇳🇬
 ### Digital UK Shopping & Sourcing Assistant for Nigeria
 
-**UK2Naija** is a demand-led, concierge-style cross-border shopping assistant that connects shoppers in Nigeria directly with authentic consumer goods, electronics, baby care, fashion, and clinical supplies sourced directly from verified United Kingdom retailers.
+**UK2Naija** is a demand-led, concierge-style cross-border commerce and sourcing platform that connects shoppers and businesses in Nigeria directly with authentic consumer goods, electronics, baby care, school supplies, fashion, and clinical items sourced from verified United Kingdom retailers. 
+
+Designed with a forward-looking **bidirectional trade architecture**, UK2Naija bridges the London-to-Lagos/Abuja trade corridor with complete transparency, verified provenance, and door-to-door delivery.
 
 ---
 
 ## 🌟 Key Value Proposition
 
-1. **Zero UK Card Friction**: Customers pay locally in Nigerian Naira (₦) via virtual NUBAN transfer or card. No foreign currency limits or UK bank cards required.
-2. **Provenance & Counterfeit Immunity**: All goods are physically purchased from official UK retailers (Boots UK, Apple Regent Street, Marks & Spencer, Next, John Lewis, Currys, Clarks UK, Superdrug) with paper VAT receipts.
-3. **5-Point London QC Inspection**: Before any item leaves the UK, it undergoes a physical quality check (tamper seals, batch codes, expiry dates, and UK 3-pin Type G plug verification) with photographic proof uploaded to the customer's tracking portal.
-4. **Guaranteed DDP (Delivered Duty Paid)**: All customs duties, port clearing, and terminal handling in Lagos and Abuja are pre-cleared. Customers face zero clearance ambushes or surprise demurrage fees.
-5. **No Account Registration Barrier**: Customers can submit sourcing requests and track order quotations immediately without creating accounts or setting passwords.
+1. **Zero Foreign Card Friction**: Customers pay locally in Nigerian Naira (₦) via virtual NUBAN transfer or card. No foreign currency limits, black-market FX risks, or international card restrictions.
+2. **Authentic Provenance & Counterfeit Immunity**: All items are purchased directly from official UK high-street and flagship retailers (Smiggle, Next, TK Maxx, Marks & Spencer, Boots UK, Apple Store UK, John Lewis, Currys, Clarks UK, Superdrug) with authentic paper VAT receipts.
+3. **5-Point Physical QC in London**: Before items depart the United Kingdom, our London team performs physical inspection—verifying factory tamper seals, batch codes, manufacturer expiry dates, and UK Type G 3-pin fused electrical plugs—accompanied by photo confirmation.
+4. **Guaranteed Delivered Duty Paid (DDP)**: Customs duties, import clearing, and terminal handling at Lagos and Abuja ports are pre-calculated and cleared. Customers experience zero clearance surprises, demurrage penalties, or hidden port fees.
+5. **Frictionless Onboarding**: Customers can submit custom product requests and track orders immediately without mandatory password creation or account barriers.
 
 ---
 
-## 🚀 Customer Features & Workflow
+## 🔄 Bidirectional Trade Corridor Vision
 
-### 1. Product Request Submission (`/` or "Submit Request" Tab)
+UK2Naija is architected to facilitate reciprocal commerce between the United Kingdom and Nigeria:
+* **UK ➔ Nigeria**: Sourcing high-demand British goods, premium schoolwear, baby nutrition, authentic electronics, and designer fashion directly to Nigerian doorsteps.
+* **Nigeria ➔ UK**: Future-ready infrastructure designed to support outbound artisan crafts, agro-commodities, fashion, and specialty Nigerian products flowing back to diaspora and international markets.
+
+---
+
+## 🛍️ Featured Sourced Categories & Retailers
+
+### Popular Retailers Directory
+* **Smiggle UK**: Scented hardtop pencil cases, dual-compartment lunchboxes, pop-out drink bottles, and ergonomic school backpacks highly sought after across private schools in Lagos and Abuja.
+* **Next UK**: High-street family fashion, 100% pure cotton baby sleepsuit multipacks, stain-resistant school uniforms, and tailored occasionwear.
+* **TK Maxx UK**: Designer brand clearance, authentic luxury perfumes (Chanel, Dior, Tom Ford), designer handbags, premium cookware (Le Creuset), and activewear at up to 60% below retail.
+* **Marks & Spencer (M&S)**: Stain-defence non-iron school shirts, pure cotton underwear, cashmere knitwear, and British pantry classics.
+* **Boots UK**: Genuine infant nutrition (Aptamil Profutura, Kendamil Organic), Boots Soltan sun care, and dermatological skincare (CeraVe, La Roche-Posay).
+* **Apple Store UK**: British English keyboard MacBooks, AirPods Pro USB-C, iPads, and accessories with official UK Type G 3-pin fused chargers and worldwide AppleCare eligibility.
+* **Clarks UK**: Heritage British footwear, classic Wallabees, Desert Boots, and scuff-resistant leather school shoes.
+* **John Lewis & Partners**: Premium homeware, Dyson stylers, and luxury nursery gear.
+* **Currys PC World**: 230V 50Hz UK-spec electronics, gaming rigs, and kitchen appliances.
+
+---
+
+## 🚀 Customer Workflow
+
+### 1. Submit Product Request
 * **Single or Multi-Item Sourcing**: Request one or multiple items in a single submission.
-* **"I Don't Know What It's Called" Mode**: Customers who don't know an exact brand name can describe what the item does or looks like, paste a reference link, or provide a photo URL.
-* **Popular UK Presets**: 1-click presets for in-demand UK goods (Aptamil Profutura Stage 1, Apple AirPods Pro USB-C, Clarks Originals Desert Boots, CeraVe UK sensitive skincare bundles).
-* **Target Budget & Delivery City**: Customers specify their price expectations and delivery destination (Lagos Island/Mainland, Abuja, Port Harcourt, Ibadan, or nationwide).
+* **Assisted Search / Link Paste**: Enter a product title, paste a UK retailer link, or describe what the item does and looks like.
+* **Popular Presets**: 1-click presets for top requested UK products (Smiggle school sets, Next pure cotton uniforms, TK Maxx designer fragrances, Apple AirPods Pro, Boots Aptamil formula, and Clarks Desert Boots).
+* **Budget & Delivery Destination**: Specify target budget and destination city (Lagos, Abuja, Port Harcourt, Ibadan, or nationwide).
 
-### 2. "Some Retailers" Directory ("Some Retailers" Tab)
-* Curated directory of recommended UK retailers (Marks & Spencer, Next, Boots UK, Apple Store UK, John Lewis, Currys, Clarks UK, Argos, Superdrug).
-* 1-click **"Request from this Store"** button that pre-selects the merchant and guides the customer through specifying their desired size, color, or item.
-* Capability for operators to add new UK retailers or reset to verified defaults.
+### 2. Retailer Directory ("Some Retailers")
+* Explore curated British merchants.
+* Use **"Request from this Store"** to pre-fill the order form with the store catalog reference.
 
-### 3. Transparent Order Tracking ("Track Request" Tab)
-* 6-Stage Lifecycle Tracking:
-  1. `1. Request Submitted` (Received by London sourcing desk)
-  2. `2. Sourcing in UK` (Merchant stock and pricing verified)
-  3. `3. Quotation Issued` (Transparent itemized landed cost in Naira)
-  4. `4. Approved & Paid` (Customer approved and funded order)
-  5. `5. Purchased & Inspected` (London store receipt & QC inspection photos logged)
-  6. `6. Dispatched to Nigeria` (Air cargo master waybill & doorstep courier tracking)
-* Transparent landed cost breakdown (UK Retail Price, 12% Sourcing Fee, Air Freight, and DDP Port Handling).
-* High-resolution London QC inspection photo inspection.
+### 3. Transparent Order Tracking
+Track your item across the 6-stage lifecycle:
+1. `1. Request Submitted` (Received by London sourcing team)
+2. `2. Sourcing in UK` (Merchant stock and pricing verified)
+3. `3. Quotation Issued` (Transparent itemized landed cost in Naira)
+4. `4. Approved & Paid` (Customer approved and funded order)
+5. `5. Purchased & Inspected` (London store receipt & QC inspection photos logged)
+6. `6. Dispatched to Nigeria` (Air cargo master waybill & doorstep courier tracking)
 
 ---
 
-## 🛡️ Failsafe Order Receipt Architecture
+## 💡 Transparent Landed Cost Pricing Model
 
-To guarantee that customer product requests are **never lost or dropped**, UK2Naija uses a 3-layer receipt mechanism:
-
-```
-                  Customer Submits Product Request
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
- [Layer 1: Local Cache]   [Layer 2: Google Sheets] [Layer 3: 1-Click WhatsApp]
-  Saved immediately in     Webhook dispatches raw   One-tap pre-formatted
-  browser localStorage     JSON to Google Sheets    WhatsApp forward sent
-  & state for tracking     via Google Apps Script   directly to UK team
-```
-
-1. **Layer 1: Local Persistence**: The request is instantly saved to local storage with an autogenerated reference ID (`UK2N-xxxx`), making tracking immediate.
-2. **Layer 2: Google Sheets Webhook Sync**: The request is dispatched via HTTP POST to the deployed Google Apps Script webhook, appending a new row to `UK2Naija_Orders`.
-3. **Layer 3: Instant 1-Click WhatsApp Forward (Zero-Drop Failsafe)**: Upon submission, the customer is presented with a prominent button: **"Forward Order to UK Sourcing Team via WhatsApp"**. Clicking it launches WhatsApp with the full order pre-formatted (Ref ID, customer name, delivery city, items list, and budget), putting the order directly into the hands of the UK sourcing team in real time.
+All quotations provide a complete line-item breakdown:
+* **UK Retail Price**: Exact store shelf price in GBP (£).
+* **Sourcing Fee**: Transparent service fee covering procurement, physical London collection, and 5-point QC.
+* **Air Freight**: Scheduled Heathrow weekly air cargo billable by weight.
+* **DDP Terminal Handling**: Flat-rate Lagos/Abuja import handling with zero port demurrage risk.
+* **Real-Time FX Conversion**: Benchmark exchange rate clearly displayed for conversion to Nigerian Naira (₦).
 
 ---
 
-## 📊 Google Sheets Live Integration Setup
+## 💻 Tech Stack
 
-UK2Naija integrates with Google Sheets via a lightweight, serverless Google Apps Script webhook featuring:
-* **Concurrency Locking (`LockService.getScriptLock()`)**: Waits up to 15 seconds to safely serialize concurrent submissions without collisions.
-* **Automatic Header Generation**: Formats Row 1 with dark navy background (`#0f172a`), bold white text (`#f8fafc`), and frozen header row if the sheet is blank.
-* **Update-in-Place by `Request_ID`**: When an admin issues a quote or updates an order status, the existing row is updated in place instead of creating duplicate records.
-
-### Step-by-Step Setup Instructions
-
-1. **Create a new Google Sheet**:
-   * Go to [sheets.new](https://sheets.new) and name the spreadsheet `UK2Naija Orders`.
-   * Rename the first tab/sheet to `UK2Naija_Orders`.
-
-2. **Open the Apps Script Editor**:
-   * In the Google Sheets top menu, click **Extensions** ➔ **Apps Script**.
-
-3. **Paste the Webhook Code**:
-   * Delete any default code in `Code.gs` and paste the following script:
-
-```javascript
-function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(15000); // Wait up to 15s to handle concurrent requests safely
-
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("UK2Naija_Orders") || ss.getActiveSheet();
-
-    // Auto-create dark formatted header row if sheet is brand new
-    if (sheet.getLastRow() === 0) {
-      var headers = [
-        "Timestamp (UTC)",
-        "Request_ID",
-        "Customer_Name",
-        "WhatsApp_Number",
-        "Delivery_City",
-        "Delivery_Address",
-        "Category",
-        "Product_Items_Summary",
-        "Budget_Range",
-        "Lifecycle_Status",
-        "Landed_Quote_GBP",
-        "Landed_Quote_NGN",
-        "UK_Retailer",
-        "Admin_Sourcing_Notes"
-      ];
-      sheet.appendRow(headers);
-      var headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setFontWeight("bold");
-      headerRange.setBackground("#0f172a");
-      headerRange.setFontColor("#f8fafc");
-      headerRange.setHorizontalAlignment("center");
-      sheet.setFrozenRows(1);
-    }
-
-    var payload = JSON.parse(e.postData.contents);
-    var row = payload.data;
-
-    if (!row.requestId || !row.customerName) {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "error",
-        message: "Missing mandatory Request_ID or Customer_Name"
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // Check if Request_ID already exists to update row in place
-    var data = sheet.getDataRange().getValues();
-    var targetRowIndex = -1;
-    for (var i = 1; i < data.length; i++) {
-      if (String(data[i][1]).trim() === String(row.requestId).trim()) {
-        targetRowIndex = i + 1; // 1-indexed sheet row
-        break;
-      }
-    }
-
-    var rowValues = [
-      row.timestamp || new Date().toISOString(),
-      row.requestId,
-      row.customerName,
-      row.whatsapp,
-      row.deliveryCity,
-      row.deliveryAddress || "Standard Hub Collection",
-      row.category,
-      row.productItems,
-      row.budget,
-      row.status,
-      row.quoteGbp,
-      row.quoteNgn,
-      row.retailer,
-      row.notes
-    ];
-
-    if (targetRowIndex > 0) {
-      sheet.getRange(targetRowIndex, 1, 1, rowValues.length).setValues([rowValues]);
-    } else {
-      sheet.appendRow(rowValues);
-    }
-
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      requestId: row.requestId,
-      action: targetRowIndex > 0 ? "updated" : "appended"
-    })).setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      error: err.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "online",
-    service: "UK2Naija Google Sheets Webhook Sink",
-    message: "Ready to receive customer request payloads from UK2Naija assistant."
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-```
-
-4. **Deploy as Web App**:
-   * Click **Deploy** ➔ **New deployment**.
-   * Click the gear icon next to "Select type" and select **Web app**.
-   * Configure deployment settings:
-     * **Description**: `UK2Naija Live Orders Webhook`
-     * **Execute as**: `Me (your email address)`
-     * **Who has access**: **`Anyone`** *(CRITICAL: Must be "Anyone" so the client application can submit requests without OAuth consent prompts).*
-   * Click **Deploy** and copy the **Web App URL** (ends in `/exec`).
-
-5. **Connect URL to the Live Site**:
-   * Open `src/config/sheetsConfig.ts` in your codebase:
-     ```typescript
-     export const DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/.../exec';
-     export const DEFAULT_SHEET_TAB_NAME = 'UK2Naija_Orders';
-     export const ADMIN_ACCESS_PASSCODE = '2026';
-     ```
-   * Paste your deployed Web App URL into `DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL`.
-   * Commit and push. **Now every customer submitting a request on your live GitHub Pages site will automatically log directly into your Google Sheet!**
-
----
-
-## 🔒 Operator / Sourcing Admin Access
-
-To maintain a clean, customer-facing shopping experience, the **Sourcing Admin** console is hidden from standard visitors.
-
-### How Operators Access Admin Mode
-Operators can access the console in two ways:
-1. **URL Parameter**: Append `?admin=true` or `#admin` to the URL (e.g., `https://your-domain.com/?admin=true`).
-2. **Discreet Footer Link**: Scroll to the footer, click the **Operator** lock icon next to the copyright notice, and enter the staff PIN.
-   * **Default Staff PIN**: `2026` (configurable in `src/config/sheetsConfig.ts`).
-
-### Operator Capabilities
-When Operator Mode is active:
-* An amber **"UK2Naija Operator Console Active"** banner appears at the top with an **"Exit Operator Mode"** button.
-* The **Sourcing Admin** tab appears in the navigation bar.
-* **Order Triage**: Review pending customer submissions, approve or decline requests, and send pre-filled status updates to customers on WhatsApp.
-* **Landed Cost Calculator**: Calculate landed quotes using live unit economics (£1.00 = ₦2,150, 12% sourcing fee with £15 floor, £9.50/kg Heathrow air freight, and £4.00 Lagos DDP clearing).
-* **London QC Photo Logger**: Attach store receipts and upload 5-point inspection photos for customer approval.
-* **Air Cargo Dispatch**: Log Master Air Waybill (AWB) numbers and domestic Nigerian delivery riders.
-* **Google Sheets Hub**: Test webhook connectivity, batch synchronize all local customer records, and export CSV files.
-* **Strategic Architecture Dossier**: Confidential playbook covering commercial mechanics, unit economics, NCS/NAFDAC regulatory compliance, and a 90-day agile scaling roadmap.
-
----
-
-## 🚢 GitHub Pages Deployment
-
-The application is pre-configured for automated continuous deployment to GitHub Pages using Vite and GitHub Actions.
-
-### Repository Workflow Configuration
-The repository includes `.github/workflows/deploy.yml`:
-* **Node.js**: Runs on Node 22 (LTS).
-* **Dependencies**: Uses `npm install --legacy-peer-deps` with `package-lock.json` committed.
-* **Vite Base Path**: Configured as `base: './'` in `vite.config.ts` to support both root and subpath GitHub Pages URLs.
-
-### Manual Local Build & Preview
-```bash
-# 1. Install dependencies
-npm install --legacy-peer-deps
-
-# 2. Build production bundle
-npm run build
-
-# 3. Preview production build locally
-npm run preview
-```
-
-To deploy directly from the command line using `gh-pages`:
-```bash
-npm run deploy
-```
-
----
-
-## 📋 Technology Stack
-* **Framework**: React 19 + TypeScript
-* **Build Tool**: Vite 8
+* **Frontend Framework**: React 19 + TypeScript
+* **Build System**: Vite 8
 * **Styling**: Tailwind CSS v4
 * **Icons**: Lucide React
-* **Backend Database Sink**: Google Sheets + Google Apps Script Webhooks (Serverless)
-* **Hosting**: GitHub Pages / Static Web Hosting
+* **State & Persistence**: Local reactive browser storage with real-time cross-tab synchronization
 
 ---
 

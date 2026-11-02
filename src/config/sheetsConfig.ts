@@ -8,6 +8,6 @@
 
 export const DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL = '';
 
-export const DEFAULT_SHEET_TAB_NAME = 'UK2Naija_Orders';
+export const DEFAULT_SHEET_TAB_NAME = 'UK_Source_Orders_11-2026';
 
 export const ADMIN_ACCESS_PASSCODE = '2026';

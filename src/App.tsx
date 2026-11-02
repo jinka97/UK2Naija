@@ -19,6 +19,7 @@ import { CustomerTrackingView } from './components/CustomerTrackingView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { RecommendedSitesDirectory } from './components/RecommendedSitesDirectory';
 import { ADMIN_ACCESS_PASSCODE } from './config/sheetsConfig';
+import { UK2NaijaLogo } from './components/UK2NaijaLogo';
 
 export default function App() {
   const [requests, setRequests] = useState<CustomerRequest[]>([]);
@@ -44,6 +45,13 @@ export default function App() {
   useEffect(() => {
     loadRequests();
 
+    const handleStorageUpdate = () => {
+      loadRequests();
+    };
+
+    window.addEventListener('uk2n_storage_updated', handleStorageUpdate);
+    window.addEventListener('storage', handleStorageUpdate);
+
     // Check if operator mode is requested via URL parameter (?admin=true or #admin) or existing session
     const searchParams = new URLSearchParams(window.location.search);
     const hash = window.location.hash;
@@ -55,10 +63,15 @@ export default function App() {
         setActiveTab('admin');
       }
     }
+
+    return () => {
+      window.removeEventListener('uk2n_storage_updated', handleStorageUpdate);
+      window.removeEventListener('storage', handleStorageUpdate);
+    };
   }, []);
 
   const handleRequestSubmitted = (newReq: CustomerRequest) => {
-    loadRequests();
+    setRequests((prev) => [newReq, ...prev.filter((r) => r.id !== newReq.id)]);
     setSelectedRequestId(newReq.id);
   };
 
@@ -161,24 +174,12 @@ export default function App() {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Logo & Platform Title */}
+            {/* Stylistic Bidirectional UK2Naija Logo */}
             <div
               onClick={() => setActiveTab('submit')}
-              className="flex items-center gap-2.5 cursor-pointer select-none"
+              className="cursor-pointer select-none py-1"
             >
-              <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-xs tracking-wider shadow-sm">
-                UK2N
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base font-black tracking-tight text-slate-900">UK2Naija</span>
-                  <span className="text-xs font-bold text-slate-400">·</span>
-                  <span className="text-[11px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    UK ➔ Nigeria
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-500 font-medium">Digital UK Shopping & Sourcing Assistant</p>
-              </div>
+              <UK2NaijaLogo variant="default" size="md" />
             </div>
 
             {/* Navigation Tabs (Customer Facing by default) */}
@@ -296,10 +297,8 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
             {/* Column 1: Brand & Identity */}
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 text-white font-bold text-sm mb-2.5">
-                <span className="text-emerald-400 font-black">UK2Naija</span>
-                <span className="text-slate-400">·</span>
-                <span className="text-xs text-slate-300">London ➔ Lagos & Abuja</span>
+              <div className="mb-3">
+                <UK2NaijaLogo variant="light" size="md" />
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
                 Your personal digital UK shopping assistant. Tell us what you need from verified British retailers, and we
@@ -437,16 +436,13 @@ export default function App() {
                     setPinInput(e.target.value);
                     setPinError('');
                   }}
-                  placeholder="Enter PIN (Default: 2026)"
+                  placeholder="Enter staff passcode"
                   autoFocus
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono tracking-widest"
                 />
                 {pinError && (
                   <p className="text-xs text-rose-600 mt-1 font-medium">{pinError}</p>
                 )}
-                <p className="text-[11px] text-slate-400 mt-1.5">
-                  Default passcode is <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-slate-700">2026</code> (configured in <code className="font-mono text-slate-700">sheetsConfig.ts</code>).
-                </p>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">

@@ -120,7 +120,7 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Enter ID (e.g. UKS-4821)"
+              placeholder="Enter ID (e.g. UK2N-4821)"
               className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-slate-900 font-mono"
             />
           </div>
