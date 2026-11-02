@@ -268,10 +268,10 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           </span>
 
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            We've Received Your UK Sourcing Request!
+            We've Received Your UK2Naija Sourcing Request!
           </h2>
           <p className="text-slate-600 mb-6 text-sm max-w-md mx-auto">
-            Your personal UK sourcing contact has been notified. We are currently checking verified UK retailers and
+            Your personal UK sourcing specialist has been notified. We are currently checking verified UK retailers and
             preparing your transparent landed quotation.
           </p>
 
@@ -309,7 +309,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
               <div className="pt-2 mt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-emerald-800">
                 <div className="flex items-center gap-1.5 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>Logged in Master Orders Database</span>
+                  <span>Logged in UK2Naija Database</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -319,33 +319,46 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              onClick={() => onOpenTrackView(submittedRequest.id)}
-              className="w-full sm:w-auto px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-            >
-              <span>Track Request & View Quotation</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
+          <div className="space-y-3">
+            {/* Primary Failsafe Action: Direct WhatsApp Dispatch */}
             <a
               href={`https://wa.me/447700900123?text=${encodeURIComponent(
-                `Hello UK Source! I just submitted request ${submittedRequest.id} for "${submittedRequest.items[0]?.name}". Looking forward to my landed quotation!`
+                `*UK2NAIJA SOURCING ORDER - NEW SUBMISSION*\n` +
+                `----------------------------------------\n` +
+                `*Ref ID:* ${submittedRequest.id}\n` +
+                `*Customer:* ${submittedRequest.customerName}\n` +
+                `*Phone/WhatsApp:* ${submittedRequest.whatsappPhone}\n` +
+                `*Delivery City:* ${submittedRequest.deliveryCity}\n` +
+                `*Address:* ${submittedRequest.deliveryAddress || 'Standard Collection'}\n` +
+                `*Items Requested:*\n${submittedRequest.items.map((it, idx) => `  ${idx + 1}. ${it.name || 'UK Item'} x${it.quantity}${it.brand ? ` (${it.brand})` : ''}${it.specs ? ` - Note: ${it.specs}` : ''}`).join('\n')}\n` +
+                `*Target Budget:* ${submittedRequest.budget}\n` +
+                `----------------------------------------\n` +
+                `Please confirm receipt and send landed quote in Naira!`
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm"
             >
-              <MessageCircle className="w-4 h-4 text-emerald-400" />
-              <span>Message UK Desk on WhatsApp</span>
+              <MessageCircle className="w-5 h-5 text-white" />
+              <span>Forward Order to UK Sourcing Team via WhatsApp (Instant Receipt)</span>
             </a>
 
-            <button
-              onClick={() => setSubmittedRequest(null)}
-              className="w-full sm:w-auto px-5 py-3 border border-slate-300 hover:bg-slate-100 text-slate-700 font-medium rounded-xl text-sm transition cursor-pointer"
-            >
-              Submit Another Product
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5">
+              <button
+                onClick={() => onOpenTrackView(submittedRequest.id)}
+                className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <span>Track Request & View Quotation</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setSubmittedRequest(null)}
+                className="w-full sm:w-auto px-5 py-2.5 border border-slate-300 hover:bg-slate-100 text-slate-700 font-medium rounded-xl text-xs sm:text-sm transition cursor-pointer"
+              >
+                Submit Another Product
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-500">
@@ -362,7 +375,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
       {/* Hero: Customer Facing Header */}
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-medium mb-4 shadow-sm">
-          <span>🇬🇧 UK SOURCE</span>
+          <span>🇬🇧 UK2Naija</span>
           <span className="text-slate-400">➔</span>
           <span>🇳🇬 Nigeria</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>

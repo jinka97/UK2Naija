@@ -57,7 +57,7 @@ export const GoogleSheetsHub: React.FC<GoogleSheetsHubProps> = ({ requests, onRe
     setSyncStatus('Testing live transmission to Google Sheets...');
 
     const sample = requests[0] || {
-      id: 'UKS-TEST',
+      id: 'UK2N-TEST',
       createdAt: new Date().toISOString(),
       customerName: 'Test Customer',
       whatsappPhone: '+234 800 000 0000',
@@ -96,16 +96,17 @@ export const GoogleSheetsHub: React.FC<GoogleSheetsHubProps> = ({ requests, onRe
   };
 
   const appsScriptCode = `// -----------------------------------------------------------------
-// UK SOURCE ➔ NIGERIA: PRODUCTION GOOGLE SHEETS LIVE DATABASE SINK
+// UK2NAIJA: PRODUCTION GOOGLE SHEETS LIVE ORDERS SINK
 // -----------------------------------------------------------------
 // 1. In Google Sheets: Extensions > Apps Script
 // 2. Paste this code completely, replacing any existing code
 // 3. Click "Deploy" > "New deployment"
 // 4. Select Type: "Web App"
-//    - Description: "UK Source Live Orders"
+//    - Description: "UK2Naija Live Orders Webhook"
 //    - Execute as: "Me (your email)"
-//    - Who has access: "Anyone" (crucial for webhooks)
-// 5. Copy the generated Web App URL and paste into the UK Source Admin
+//    - Who has access: "Anyone" (crucial for receiving browser requests)
+// 5. Copy the generated Web App URL and paste into UK2Naija Admin
+//    OR put it in src/config/sheetsConfig.ts for automatic live logging!
 // -----------------------------------------------------------------
 
 function doPost(e) {
@@ -114,7 +115,7 @@ function doPost(e) {
 
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("UK_Source_Orders") || ss.getActiveSheet();
+    var sheet = ss.getSheetByName("UK2Naija_Orders") || ss.getActiveSheet();
 
     // Auto-create formatted header row if sheet is brand new
     if (sheet.getLastRow() === 0) {
@@ -376,7 +377,7 @@ function doGet(e) {
                     >
                       sheets.new
                     </a>{' '}
-                    and name it <em>"UK Source Orders"</em>.
+                    and name it <em>"UK2Naija Orders"</em>.
                   </div>
                 </div>
 
@@ -403,7 +404,7 @@ function doGet(e) {
                     4
                   </span>
                   <div>
-                    <strong>Deploy as Web App:</strong> Click <em>Deploy ➔ New deployment</em>. Select type <em>Web app</em>, execute as <em>Me</em>, and set <strong>Who has access: Anyone</strong>.
+                    <strong>Deploy as Web App:</strong> Click <em>Deploy ➔ New deployment</em>. Select type <em>Web app</em>, execute as <em>Me</em>, and set <strong>Who has access: Anyone</strong> (required to log live customer requests).
                   </div>
                 </div>
 
@@ -412,7 +413,7 @@ function doGet(e) {
                     5
                   </span>
                   <div>
-                    <strong>Paste URL & Verify:</strong> Copy the URL and paste it into the form above. Click <em>Test Webhook</em>.
+                    <strong>Connect Live Site:</strong> Copy the Web App URL and either paste it into the connector above, or paste it into <code>src/config/sheetsConfig.ts</code> as <code>DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL</code> so all GitHub Pages visitors automatically log their orders to your sheet!
                   </div>
                 </div>
               </div>

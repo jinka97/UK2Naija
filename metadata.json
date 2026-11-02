@@ -1,6 +1,6 @@
 {
-  "name": "UK Source Nigeria",
-  "description": "Demand-led digital UK shopping assistant connecting Nigerian customers with authentic products sourced directly from the UK, transparent landed quotations, and Google Sheets database sync.",
+  "name": "UK2Naija",
+  "description": "UK2Naija is a demand-led digital UK shopping assistant connecting Nigerian customers with authentic products sourced directly from verified UK retailers, transparent landed quotations in Naira, and reliable Google Sheets sync.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

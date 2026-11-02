@@ -152,7 +152,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleGenerateWhatsAppLink = (req: CustomerRequest) => {
     const phone = req.whatsappPhone.replace(/[^0-9]/g, '');
-    let msg = `Hello ${req.customerName}, this is your UK Source personal shopping concierge regarding request ${req.id}.`;
+    let msg = `Hello ${req.customerName}, this is your UK2Naija personal shopping concierge regarding request ${req.id}.`;
 
     if (req.status === 'submitted') {
       msg += ` We have received your request for "${req.items[0]?.name}" and are checking stock with verified UK retailers.`;

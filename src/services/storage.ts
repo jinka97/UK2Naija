@@ -1,4 +1,8 @@
 import { CustomerRequest, GoogleSheetsConfig, RecommendedStore } from '../types';
+import {
+  DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL,
+  DEFAULT_SHEET_TAB_NAME,
+} from '../config/sheetsConfig';
 
 export const BENCHMARK_FX_RATE = 2150; // ₦2,150 per £1 GBP
 export const SOURCING_FEE_PCT = 0.12; // 12%
@@ -8,7 +12,7 @@ export const CUSTOMS_CLEARING_FLAT = 4.0; // £4.00 DDP terminal handling
 
 export const INITIAL_SEED_REQUESTS: CustomerRequest[] = [
   {
-    id: 'UKS-4821',
+    id: 'UK2N-4821',
     createdAt: '2026-11-01T04:15:00.000Z',
     customerName: 'Amina Bello',
     whatsappPhone: '+234 803 555 0192',
@@ -46,7 +50,7 @@ export const INITIAL_SEED_REQUESTS: CustomerRequest[] = [
     adminNotes: 'Customer requested photo verification of batch code prior to dispatch.',
   },
   {
-    id: 'UKS-4819',
+    id: 'UK2N-4819',
     createdAt: '2026-10-31T11:20:00.000Z',
     customerName: 'Femi Alabi',
     whatsappPhone: '+234 812 444 8921',
@@ -103,7 +107,7 @@ export const INITIAL_SEED_REQUESTS: CustomerRequest[] = [
     adminNotes: 'High-value customer. Prepaid in full via NIP bank transfer.',
   },
   {
-    id: 'UKS-4815',
+    id: 'UK2N-4815',
     createdAt: '2026-10-30T16:00:00.000Z',
     customerName: 'Grace Eze',
     whatsappPhone: '+234 802 888 1234',
@@ -149,7 +153,7 @@ export const INITIAL_SEED_REQUESTS: CustomerRequest[] = [
     adminNotes: 'Checking Medisave UK and Williams Medical trade accounts for bulk clinician pricing.',
   },
   {
-    id: 'UKS-4802',
+    id: 'UK2N-4802',
     createdAt: '2026-10-28T14:40:00.000Z',
     customerName: 'Tunde Bakare',
     whatsappPhone: '+234 818 999 5566',
@@ -232,7 +236,7 @@ export function saveStoredRequests(requests: CustomerRequest[]): void {
 export function createNewRequest(newReq: Omit<CustomerRequest, 'id' | 'createdAt' | 'status'>): CustomerRequest {
   const current = getStoredRequests();
   const nextNumber = 4825 + Math.floor(Math.random() * 80);
-  const id = `UKS-${nextNumber}`;
+  const id = `UK2N-${nextNumber}`;
   const request: CustomerRequest = {
     ...newReq,
     id,
@@ -284,13 +288,21 @@ export function resetToSeedData(): CustomerRequest[] {
 export function getGoogleSheetsConfig(): GoogleSheetsConfig {
   try {
     const raw = localStorage.getItem(SHEETS_CONFIG_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        webhookUrl: parsed.webhookUrl || DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL,
+        sheetName: parsed.sheetName || DEFAULT_SHEET_TAB_NAME,
+        autoSync: parsed.autoSync !== undefined ? parsed.autoSync : true,
+        lastSyncedAt: parsed.lastSyncedAt,
+      };
+    }
   } catch {
     // ignore
   }
   return {
-    webhookUrl: '',
-    sheetName: 'UK_Source_Orders',
+    webhookUrl: DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL,
+    sheetName: DEFAULT_SHEET_TAB_NAME,
     autoSync: true,
   };
 }
@@ -315,7 +327,7 @@ export async function syncToGoogleSheets(request: CustomerRequest): Promise<bool
   try {
     const payload = {
       action: 'append_or_update',
-      sheet: config.sheetName || 'UK_Source_Orders',
+      sheet: config.sheetName || DEFAULT_SHEET_TAB_NAME || 'UK2Naija_Orders',
       data: {
         timestamp: new Date().toISOString(),
         requestId: request.id,
@@ -336,11 +348,11 @@ export async function syncToGoogleSheets(request: CustomerRequest): Promise<bool
       },
     };
 
-    // Google Apps Script requires mode: 'no-cors' for browser webhooks or standard POST
+    // Google Apps Script requires mode: 'no-cors' with text/plain payload to avoid CORS preflight rejection in browsers
     await fetch(config.webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain;charset=utf-8',
       },
       body: JSON.stringify(payload),
       mode: 'no-cors', // standard for Apps Script web endpoints
@@ -418,7 +430,7 @@ export function exportRequestsToCsv(requests: CustomerRequest[]): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);
-  link.setAttribute('download', `UK_SOURCE_Nigeria_Requests_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `UK2Naija_Requests_${new Date().toISOString().split('T')[0]}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -441,7 +453,7 @@ ${item.brand ? `- Preferred Brand: ${item.brand}\n` : ''}${
     )
     .join('\n');
 
-  return `📦 *UK SOURCE REQUEST - UK TO NIGERIA*
+  return `📦 *UK2NAIJA SOURCING REQUEST*
 ----------------------------------------
 *Customer:* ${req.customerName || 'Customer'}
 *WhatsApp:* ${req.whatsappPhone || 'Pending'}

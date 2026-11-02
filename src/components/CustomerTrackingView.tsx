@@ -519,7 +519,7 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
           </div>
 
           <a
-            href={`https://wa.me/447700900123?text=Hello%20UK%20Source!%20Inquiring%20about%20my%20request%20${activeRequest.id}%20(${activeRequest.customerName})`}
+            href={`https://wa.me/447700900123?text=Hello%20UK2Naija!%20Inquiring%20about%20my%20request%20${activeRequest.id}%20(${activeRequest.customerName})`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-medium transition"
