@@ -11,9 +11,11 @@ import {
   X,
   KeyRound,
   CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 import { CustomerRequest, RecommendedStore } from './types';
 import { getStoredRequests, BENCHMARK_FX_RATE } from './services/storage';
+import { getFxState, subscribeFxState, refreshLiveFxRate, FxRateState } from './services/fxService';
 import { CustomerRequestForm } from './components/CustomerRequestForm';
 import { CustomerTrackingView } from './components/CustomerTrackingView';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -34,6 +36,10 @@ export default function App() {
   const [pinInput, setPinInput] = useState<string>('');
   const [pinError, setPinError] = useState<string>('');
 
+  // Dynamic FX Benchmark State
+  const [fxState, setFxState] = useState<FxRateState>(() => getFxState());
+  const [isRefreshingFx, setIsRefreshingFx] = useState<boolean>(false);
+
   const loadRequests = () => {
     const data = getStoredRequests();
     setRequests(data);
@@ -44,6 +50,11 @@ export default function App() {
 
   useEffect(() => {
     loadRequests();
+
+    // Subscribe to dynamic FX benchmark updates
+    const unsubFx = subscribeFxState((state) => {
+      setFxState(state);
+    });
 
     const handleStorageUpdate = () => {
       loadRequests();
@@ -65,6 +76,7 @@ export default function App() {
     }
 
     return () => {
+      unsubFx();
       window.removeEventListener('uk2n_storage_updated', handleStorageUpdate);
       window.removeEventListener('storage', handleStorageUpdate);
     };
@@ -145,14 +157,32 @@ export default function App() {
       {/* Top Banner: Currency Benchmark & Direct WhatsApp Concierge */}
       <div className="bg-slate-950 text-slate-300 text-[11px] py-1.5 px-4 border-b border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Live FX Benchmark: £1.00 = ₦{BENCHMARK_FX_RATE.toLocaleString()}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+              <span className={`w-1.5 h-1.5 rounded-full ${isRefreshingFx ? 'bg-amber-400 animate-spin' : 'bg-emerald-400 animate-pulse'}`}></span>
+              <span>Live FX Benchmark: £1.00 = ₦{fxState.rate.toLocaleString()}</span>
             </span>
+
+            <button
+              type="button"
+              onClick={async () => {
+                setIsRefreshingFx(true);
+                try {
+                  await refreshLiveFxRate();
+                } finally {
+                  setTimeout(() => setIsRefreshingFx(false), 500);
+                }
+              }}
+              title="Click to check prevailing market FX rate"
+              className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 hover:border-emerald-500 text-slate-300 hover:text-emerald-300 flex items-center gap-1 transition cursor-pointer"
+            >
+              <RefreshCw className={`w-2.5 h-2.5 ${isRefreshingFx ? 'animate-spin text-emerald-400' : 'text-slate-400'}`} />
+              <span>{isRefreshingFx ? 'Updating...' : 'Live Feed'}</span>
+            </button>
+
             <span className="text-slate-600 hidden sm:inline">|</span>
             <span className="text-slate-400 hidden sm:inline">
-              Guaranteed DDP (Delivered Duty Paid) to Lagos & Abuja · Zero Customs Ambush
+              Guaranteed DDP to Lagos, Abuja, Kano, Kaduna, Jos & Nationwide
             </span>
           </div>
 

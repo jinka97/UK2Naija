@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { CustomerRequest, ProductItem, BudgetOption, RecommendedStore } from '../types';
 import { createNewRequest, generateSampleCopyText, BENCHMARK_FX_RATE } from '../services/storage';
+import { getBenchmarkFxRate, subscribeFxState, FxRateState } from '../services/fxService';
 import { UK2NaijaLogo } from './UK2NaijaLogo';
 
 interface CustomerRequestFormProps {
@@ -130,6 +131,22 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
   const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
   const [submittedRequest, setSubmittedRequest] = useState<CustomerRequest | null>(null);
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+
+  // Dynamic FX Benchmark listener
+  const [fxState, setFxState] = useState<FxRateState>(() => ({
+    rate: getBenchmarkFxRate(),
+    marketRate: getBenchmarkFxRate(),
+    bufferPercent: 2.5,
+    lastUpdated: '',
+    source: 'cached',
+    status: 'idle',
+  }));
+
+  useEffect(() => {
+    return subscribeFxState((state) => {
+      setFxState(state);
+    });
+  }, []);
 
   useEffect(() => {
     if (initialStore) {
@@ -321,8 +338,8 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
                 {submittedRequest.items.map((i) => `${i.name || 'UK Product'} (Qty: ${i.quantity})`).join(', ')}
               </p>
               <p>
-                <strong className="text-slate-900">Benchmark Rate:</strong> £1.00 = ₦
-                {BENCHMARK_FX_RATE.toLocaleString()} (No UK card required · 100% Naira settlement)
+                <strong className="text-slate-900">Live FX Benchmark:</strong> £1.00 = ₦
+                {fxState.rate.toLocaleString()} (No UK card required · 100% transparent Naira settlement)
               </p>
 
               {/* Explicit Data Destination Confirmation */}
@@ -962,19 +979,83 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
               </div>
 
               <div className="sm:col-span-4">
-                <label className="block text-[11px] font-medium text-slate-600 mb-1">Destination in Nigeria *</label>
+                <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                  Destination in Nigeria *
+                </label>
                 <select
                   value={deliveryCity}
                   onChange={(e) => setDeliveryCity(e.target.value)}
                   className="w-full text-xs sm:text-sm px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-slate-900"
                 >
-                  <option value="Lagos (Lekki / Victoria Island)">Lagos (Lekki / Victoria Island)</option>
-                  <option value="Lagos (Ikeja / Mainland Hub)">Lagos (Ikeja / Mainland Hub)</option>
-                  <option value="Abuja (Maitama / Wuse / Central)">Abuja (Maitama / Wuse / Central)</option>
-                  <option value="Port Harcourt (GRA / Rivers)">Port Harcourt (GRA / Rivers)</option>
-                  <option value="Ibadan (Bodija / Jericho)">Ibadan (Bodija / Jericho)</option>
-                  <option value="Other Nigerian City (Courier Dispatch)">Other Nigerian City</option>
+                  <optgroup label="Northern Nigeria Hubs">
+                    <option value="Kano (Bompai / Nassarawa / Kano State)">Kano (Bompai / Nassarawa / Kano State)</option>
+                    <option value="Kaduna (Kaduna North / Barnawa / Kaduna State)">Kaduna (Kaduna North / Barnawa / Kaduna State)</option>
+                    <option value="Jos (Rayfield / Jos North / Plateau State)">Jos (Rayfield / Jos North / Plateau State)</option>
+                    <option value="Zaria (Samaru / Zaria City / Kaduna State)">Zaria (Samaru / Zaria City / Kaduna State)</option>
+                    <option value="Minna (Tunga / Chanchaga / Niger State)">Minna (Tunga / Chanchaga / Niger State)</option>
+                    <option value="Sokoto (Sokoto Central / GRA / Sokoto State)">Sokoto (Sokoto Central / GRA / Sokoto State)</option>
+                    <option value="Ilorin (GRA / Tanke / Kwara State)">Ilorin (GRA / Tanke / Kwara State)</option>
+                    <option value="Maiduguri (GRA / Borno State Hub)">Maiduguri (GRA / Borno State Hub)</option>
+                    <option value="Katsina (Katsina Central / GRA)">Katsina (Katsina Central / GRA)</option>
+                    <option value="Bauchi (Bauchi Central / GRA)">Bauchi (Bauchi Central / GRA)</option>
+                    <option value="Yola / Jimeta (Adamawa State)">Yola / Jimeta (Adamawa State)</option>
+                  </optgroup>
+                  <optgroup label="Federal Capital Territory (FCT)">
+                    <option value="Abuja (Maitama / Wuse II / Asokoro)">Abuja (Maitama / Wuse II / Asokoro)</option>
+                    <option value="Abuja (Garki / CBD / Central Area)">Abuja (Garki / CBD / Central Area)</option>
+                    <option value="Abuja (Gwarinpa / Life Camp / Jabi)">Abuja (Gwarinpa / Life Camp / Jabi)</option>
+                    <option value="Abuja (Kubwa / Lugbe Airport Rd)">Abuja (Kubwa / Lugbe Airport Rd)</option>
+                  </optgroup>
+                  <optgroup label="South West Hubs">
+                    <option value="Lagos (Lekki / Ikoyi / Victoria Island)">Lagos (Lekki / Ikoyi / Victoria Island)</option>
+                    <option value="Lagos (Ikeja GRA / Maryland / Mainland)">Lagos (Ikeja GRA / Maryland / Mainland)</option>
+                    <option value="Lagos (Surulere / Yaba Tech Hub)">Lagos (Surulere / Yaba Tech Hub)</option>
+                    <option value="Ibadan (Bodija / Jericho / Oyo State)">Ibadan (Bodija / Jericho / Oyo State)</option>
+                    <option value="Abeokuta (GRA / Ibara / Ogun State)">Abeokuta (GRA / Ibara / Ogun State)</option>
+                    <option value="Akure (Alagbaka / Ondo State)">Akure (Alagbaka / Ondo State)</option>
+                  </optgroup>
+                  <optgroup label="South South & South East Hubs">
+                    <option value="Port Harcourt (GRA / Trans-Amadi / Rivers)">Port Harcourt (GRA / Trans-Amadi / Rivers)</option>
+                    <option value="Enugu (Independence Layout / Enugu State)">Enugu (Independence Layout / Enugu State)</option>
+                    <option value="Benin City (GRA / Airport Rd / Edo State)">Benin City (GRA / Airport Rd / Edo State)</option>
+                    <option value="Warri / Asaba (Delta State)">Warri / Asaba (Delta State)</option>
+                    <option value="Calabar (Marian / Cross River)">Calabar (Marian / Cross River)</option>
+                    <option value="Uyo (Ewet Housing / Akwa Ibom)">Uyo (Ewet Housing / Akwa Ibom)</option>
+                    <option value="Owerri (Ikenegbu / Imo State)">Owerri (Ikenegbu / Imo State)</option>
+                  </optgroup>
+                  <optgroup label="Nationwide Courier Coverage">
+                    <option value="Other Nigerian City (Direct Courier Waybill)">Other Nigerian City (Direct Courier Waybill)</option>
+                  </optgroup>
                 </select>
+
+                {/* Quick-Pick Destination Pills */}
+                <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                  <span className="text-[10px] text-slate-400 font-medium mr-0.5">Quick pick:</span>
+                  {[
+                    { label: 'Kano', val: 'Kano (Bompai / Nassarawa / Kano State)' },
+                    { label: 'Kaduna', val: 'Kaduna (Kaduna North / Barnawa / Kaduna State)' },
+                    { label: 'Jos', val: 'Jos (Rayfield / Jos North / Plateau State)' },
+                    { label: 'Abuja', val: 'Abuja (Maitama / Wuse II / Asokoro)' },
+                    { label: 'Lagos', val: 'Lagos (Lekki / Ikoyi / Victoria Island)' },
+                    { label: 'Minna', val: 'Minna (Tunga / Chanchaga / Niger State)' },
+                    { label: 'Ilorin', val: 'Ilorin (GRA / Tanke / Kwara State)' },
+                    { label: 'Sokoto', val: 'Sokoto (Sokoto Central / GRA / Sokoto State)' },
+                    { label: 'PH', val: 'Port Harcourt (GRA / Trans-Amadi / Rivers)' },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => setDeliveryCity(chip.val)}
+                      className={`text-[10px] px-2 py-0.5 rounded-full border transition cursor-pointer ${
+                        deliveryCity.startsWith(chip.label)
+                          ? 'bg-slate-900 text-white border-slate-900 font-bold'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

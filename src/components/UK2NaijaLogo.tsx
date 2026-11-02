@@ -36,63 +36,91 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       {/* Bidirectional Flow Emblem (UK ⇄ Naija) */}
       <div
-        className={`${iconSizes[size]} relative rounded-xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-1.5 shadow-sm border ${
+        className={`${iconSizes[size]} relative rounded-xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-1 shadow-sm border ${
           isLight ? 'border-slate-700/60 shadow-slate-950/40' : 'border-slate-800 shadow-slate-900/10'
-        } flex items-center justify-center shrink-0 group`}
+        } flex items-center justify-center shrink-0 group overflow-hidden`}
         title="UK2Naija: Direct Bidirectional UK ⇄ Nigeria Trade Corridor"
       >
         <svg
-          viewBox="0 0 40 40"
+          viewBox="0 0 44 44"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full transform transition-transform duration-300 group-hover:scale-105"
         >
           {/* Subtle background glow/corridor circuit */}
-          <circle cx="20" cy="20" r="17" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" strokeDasharray="2 3" />
+          <circle cx="22" cy="22" r="19" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="2 3" />
+
+          {/* Top Inscription: 'UK' neatly inside emblem */}
+          <text
+            x="22"
+            y="9.5"
+            textAnchor="middle"
+            fill="#f8fafc"
+            fontSize="6"
+            fontWeight="900"
+            letterSpacing="0.08em"
+            fontFamily="system-ui, -apple-system, sans-serif"
+          >
+            UK
+          </text>
 
           {/* Outbound Arrow: UK ➔ Naija (Emerald Path, flowing Top-Left to Top-Right) */}
           <path
-            d="M 10 14 C 15 11, 25 11, 29 14"
+            d="M 12 16.5 C 17 14, 27 14, 32 16.5"
             stroke="url(#emeraldFlow)"
-            strokeWidth="2.75"
+            strokeWidth="2.2"
             strokeLinecap="round"
           />
           {/* Top Arrowhead pointing East (➔ Nigeria) */}
           <path
-            d="M 26 10.5 L 30 14 L 26 17.5"
+            d="M 29 13.5 L 33 16.5 L 29 19.5"
             stroke="#10b981"
-            strokeWidth="2.5"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Inbound Arrow: Naija ➔ UK (Counter-flow Path, flowing Bottom-Right to Bottom-Left) */}
+          {/* Center Nexus: Stylized connecting hub */}
+          <circle cx="22" cy="21.5" r="2.2" fill="#10b981" />
+          <circle cx="22" cy="21.5" r="0.9" fill="#f8fafc" />
+
+          {/* Inbound Arrow: Naija ➔ UK (Azure Counter-flow Path, flowing Bottom-Right to Bottom-Left) */}
           <path
-            d="M 30 26 C 25 29, 15 29, 11 26"
+            d="M 32 26.5 C 27 29, 17 29, 12 26.5"
             stroke="url(#azureFlow)"
-            strokeWidth="2.75"
+            strokeWidth="2.2"
             strokeLinecap="round"
           />
           {/* Bottom Arrowhead pointing West (⬅ UK) */}
           <path
-            d="M 14 22.5 L 10 26 L 14 29.5"
+            d="M 15 23.5 L 11 26.5 L 15 29.5"
             stroke="#38bdf8"
-            strokeWidth="2.5"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Dynamic Center Nexus: Stylized numeral 2 connecting both streams */}
-          <circle cx="20" cy="20" r="3" fill="#10b981" />
-          <circle cx="20" cy="20" r="1.25" fill="#f8fafc" />
+          {/* Beneath Inscription: 'Naija' neatly inside emblem */}
+          <text
+            x="22"
+            y="37"
+            textAnchor="middle"
+            fill="#34d399"
+            fontSize="5.5"
+            fontWeight="800"
+            letterSpacing="0.04em"
+            fontFamily="system-ui, -apple-system, sans-serif"
+          >
+            Naija
+          </text>
 
           {/* Gradients */}
           <defs>
-            <linearGradient id="emeraldFlow" x1="10" y1="12" x2="30" y2="14" gradientUnits="userSpaceOnUse">
+            <linearGradient id="emeraldFlow" x1="12" y1="15" x2="33" y2="16.5" gradientUnits="userSpaceOnUse">
               <stop stopColor="#34d399" />
               <stop offset="1" stopColor="#059669" />
             </linearGradient>
-            <linearGradient id="azureFlow" x1="30" y1="28" x2="10" y2="26" gradientUnits="userSpaceOnUse">
+            <linearGradient id="azureFlow" x1="32" y1="28" x2="11" y2="26.5" gradientUnits="userSpaceOnUse">
               <stop stopColor="#38bdf8" />
               <stop offset="1" stopColor="#0284c7" />
             </linearGradient>
@@ -107,31 +135,19 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
             <span className={`font-black ${isLight ? 'text-white' : 'text-slate-900'}`}>UK</span>
             <span className="font-extrabold text-emerald-500 px-0.5 relative">
               2
-              {/* Micro bidirectional arrows above/below '2' */}
+              {/* Micro bidirectional arrows above '2' */}
               <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-[7px] text-emerald-400 font-sans tracking-tighter opacity-80">
                 ⇄
               </span>
             </span>
             <span className={`font-black ${isLight ? 'text-emerald-400' : 'text-emerald-600'}`}>Naija</span>
-            
-            {variant === 'default' && (
-              <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
-                isLight 
-                  ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/80' 
-                  : 'bg-emerald-100 text-emerald-800'
-              }`}>
-                <span>UK</span>
-                <span className="text-[9px]">⇄</span>
-                <span>Naija</span>
-              </span>
-            )}
           </div>
 
           {variant === 'default' && (
             <p className={`font-medium tracking-tight mt-0.5 flex items-center gap-1 ${subTextSizes[size]} ${
               isLight ? 'text-slate-400' : 'text-slate-500'
             }`}>
-              <span>Bidirectional UK & Nigeria Trade Corridor</span>
+              <span>UK ⇄ Nigeria Trade Corridor</span>
             </p>
           )}
         </div>

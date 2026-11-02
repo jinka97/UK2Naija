@@ -4,7 +4,10 @@ import {
   DEFAULT_SHEET_TAB_NAME,
 } from '../config/sheetsConfig';
 
-export const BENCHMARK_FX_RATE = 2150; // ₦2,150 per £1 GBP
+import { getBenchmarkFxRate } from './fxService';
+
+export { getBenchmarkFxRate };
+export const BENCHMARK_FX_RATE = 2150; // Fallback baseline constant for seed fixtures
 export const SOURCING_FEE_PCT = 0.12; // 12%
 export const SOURCING_FEE_MIN = 15; // £15 min
 export const AIR_FREIGHT_PER_KG = 9.5; // £9.50/kg

@@ -26,13 +26,20 @@ import {
 } from 'lucide-react';
 import {
   updateRequestStatus,
-  BENCHMARK_FX_RATE,
   SOURCING_FEE_PCT,
   SOURCING_FEE_MIN,
   AIR_FREIGHT_PER_KG,
   CUSTOMS_CLEARING_FLAT,
   resetToSeedData,
 } from '../services/storage';
+import {
+  getBenchmarkFxRate,
+  subscribeFxState,
+  refreshLiveFxRate,
+  setCustomFxRate,
+  setFxBufferPercent,
+  FxRateState,
+} from '../services/fxService';
 
 interface AdminDashboardProps {
   requests: CustomerRequest[];
@@ -65,16 +72,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [carrierInput, setCarrierInput] = useState<string>('British Airways World Cargo (LHR ➔ LOS)');
   const [awbInput, setAwbInput] = useState<string>('BAW-LOS-' + Math.floor(100000 + Math.random() * 900000));
 
+  // Dynamic FX Benchmark State
+  const [fxState, setFxState] = useState<FxRateState>(() => ({
+    rate: getBenchmarkFxRate(),
+    marketRate: getBenchmarkFxRate(),
+    bufferPercent: 2.5,
+    lastUpdated: '',
+    source: 'cached',
+    status: 'idle',
+  }));
+  const [customRateInput, setCustomRateInput] = useState<string>('');
+  const [isRefreshingFx, setIsRefreshingFx] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    return subscribeFxState((state) => {
+      setFxState(state);
+    });
+  }, []);
+
   const activeRequest = requests.find((r) => r.id === selectedRequestId) || requests[0] || null;
 
   const filteredRequests =
     statusFilter === 'all' ? requests : requests.filter((r) => r.status === statusFilter);
 
+  // Active FX rate: custom operator input if provided, otherwise live benchmark rate
+  const parsedCustomRate = parseFloat(customRateInput);
+  const activeFxRate = !isNaN(parsedCustomRate) && parsedCustomRate > 0 ? Math.round(parsedCustomRate) : fxState.rate;
+
   // Calculate quote line items dynamically
   const calculatedFee = Math.max(ukPriceInput * SOURCING_FEE_PCT, SOURCING_FEE_MIN);
   const calculatedFreight = weightKgInput * AIR_FREIGHT_PER_KG;
   const calculatedTotalGbp = ukPriceInput + calculatedFee + calculatedFreight + CUSTOMS_CLEARING_FLAT;
-  const calculatedTotalNgn = Math.round(calculatedTotalGbp * BENCHMARK_FX_RATE);
+  const calculatedTotalNgn = Math.round(calculatedTotalGbp * activeFxRate);
 
   const handleIssueQuote = () => {
     if (!activeRequest) return;
@@ -85,7 +114,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       airFreightGbp: calculatedFreight,
       customsHandlingGbp: CUSTOMS_CLEARING_FLAT,
       totalGbp: calculatedTotalGbp,
-      fxRate: BENCHMARK_FX_RATE,
+      fxRate: activeFxRate,
       totalNgn: calculatedTotalNgn,
       retailerFound,
       retailerUrl,
@@ -529,6 +558,56 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               </div>
 
+              {/* FX Benchmark Control & Live Sync */}
+              <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-700">Prevailing FX Rate:</span>
+                  <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    ₦{activeFxRate.toLocaleString()} / £1
+                  </span>
+                  {fxState.source === 'live_api' ? (
+                    <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-medium">
+                      Live Feed (+{fxState.bufferPercent}% buffer)
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded">
+                      Standard Benchmark
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] text-slate-500">Override:</span>
+                    <input
+                      type="number"
+                      placeholder={fxState.rate.toString()}
+                      value={customRateInput}
+                      onChange={(e) => setCustomRateInput(e.target.value)}
+                      className="w-20 px-1.5 py-0.5 text-xs bg-white border border-slate-300 rounded font-mono"
+                      title="Enter custom Naira rate to override for this quote"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsRefreshingFx(true);
+                      try {
+                        await refreshLiveFxRate();
+                        setCustomRateInput('');
+                      } finally {
+                        setTimeout(() => setIsRefreshingFx(false), 500);
+                      }
+                    }}
+                    className="p-1 text-slate-600 hover:text-emerald-700 hover:bg-slate-200 rounded transition cursor-pointer"
+                    title="Refresh live rate from exchange API"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingFx ? 'animate-spin text-emerald-600' : ''}`} />
+                  </button>
+                </div>
+              </div>
+
               {/* Real-time Math Summary */}
               <div className="bg-white p-3 rounded-lg border border-emerald-200 text-xs mb-3 space-y-1">
                 <div className="flex justify-between text-slate-600">
@@ -551,9 +630,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <span>Total Landed (GBP):</span>
                   <span className="font-mono text-emerald-800">£{calculatedTotalGbp.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-slate-900 font-bold text-sm bg-slate-900 text-white p-2 rounded mt-2">
-                  <span>Payable in Nigerian Naira (₦):</span>
-                  <span className="font-mono text-emerald-300">₦{calculatedTotalNgn.toLocaleString()}</span>
+                <div className="flex justify-between items-center text-slate-900 font-bold text-sm bg-slate-900 text-white p-2.5 rounded mt-2">
+                  <div>
+                    <span>Payable in Nigerian Naira (₦):</span>
+                    <span className="block text-[10px] font-normal text-slate-400">
+                      Calculated at ₦{activeFxRate.toLocaleString()}/£1.00
+                    </span>
+                  </div>
+                  <span className="font-mono text-emerald-300 text-base">₦{calculatedTotalNgn.toLocaleString()}</span>
                 </div>
               </div>
 
