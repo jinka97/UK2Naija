@@ -205,13 +205,26 @@ export const RecommendedSitesDirectory: React.FC<RecommendedSitesDirectoryProps>
             {/* Top Card Header */}
             <div className="p-5 pb-3">
               <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-xs tracking-wider shrink-0 shadow-xs">
-                    {store.logoText || store.name.slice(0, 3).toUpperCase()}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`min-w-[70px] max-w-[85px] h-10 px-2 rounded-xl ${
+                      store.accentColor
+                        ? `bg-gradient-to-br ${store.accentColor}`
+                        : 'bg-gradient-to-br from-slate-950 to-slate-800'
+                    } text-white flex items-center justify-center font-black ${
+                      (store.logoText || store.name).length > 8
+                        ? 'text-[8.5px]'
+                        : (store.logoText || store.name).length > 5
+                        ? 'text-[10px]'
+                        : 'text-xs'
+                    } tracking-tight shrink-0 shadow-xs text-center border border-white/10 uppercase select-none`}
+                    title={store.name}
+                  >
+                    <span className="truncate">{store.logoText || store.name.slice(0, 4).toUpperCase()}</span>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-sm sm:text-base leading-snug">{store.name}</h3>
-                    <span className="text-[11px] text-slate-500 font-medium block">{store.category}</span>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-slate-900 text-sm sm:text-base leading-snug truncate">{store.name}</h3>
+                    <span className="text-[11px] text-slate-500 font-medium block truncate">{store.category}</span>
                   </div>
                 </div>
 

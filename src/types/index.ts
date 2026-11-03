@@ -34,6 +34,13 @@ export interface Quotation {
   estimatedDeliveryDays: string;
   quotedAt: string;
   expiresAt: string;
+  billableWeightKg?: number;
+  isVolumetricWeight?: boolean;
+  dimensionsCm?: { length: number; width: number; height: number };
+  splitMilestone?: {
+    deposit70Ngn: number;
+    balance30Ngn: number;
+  };
 }
 
 export interface PurchaseProof {
@@ -58,7 +65,7 @@ export interface DispatchInfo {
 }
 
 export interface CustomerRequest {
-  id: string; // e.g. UKS-4821
+  id: string; // e.g. UK2N-4821
   createdAt: string;
   customerName: string;
   whatsappPhone: string;
@@ -69,6 +76,14 @@ export interface CustomerRequest {
   budget: BudgetOption;
   customBudgetNotes?: string;
   status: RequestStatus;
+  corridor?: 'uk-to-ng' | 'ng-to-uk'; // Bidirectional corridor
+  paymentMilestone?: {
+    type: 'full' | 'split_70_30';
+    depositPaidNgn?: number;
+    balanceDueNgn?: number;
+    depositPaidAt?: string;
+    balancePaidAt?: string;
+  };
   quotation?: Quotation;
   purchaseProof?: PurchaseProof;
   dispatchInfo?: DispatchInfo;

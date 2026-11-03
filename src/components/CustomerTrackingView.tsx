@@ -15,9 +15,11 @@ import {
   CreditCard,
   Building,
   ExternalLink,
+  RefreshCw,
 } from 'lucide-react';
 import { CustomerRequest } from '../types';
 import { updateRequestStatus } from '../services/storage';
+import { getBenchmarkFxRate } from '../services/fxService';
 
 interface CustomerTrackingViewProps {
   requests: CustomerRequest[];
@@ -44,12 +46,47 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
   const [searchInput, setSearchInput] = useState<string>('');
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
   const [paymentOption, setPaymentOption] = useState<'bank' | 'card' | 'whatsapp'>('bank');
+  const [paymentPlan, setPaymentPlan] = useState<'full' | 'split_70_30'>('split_70_30');
   const [paymentProcessing, setPaymentProcessing] = useState<boolean>(false);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
 
   // Active request to display
   const activeRequest =
     requests.find((r) => r.id === selectedRequestId) || requests[0] || null;
+
+  // 48-Hour Quote Expiration Calculation
+  const quoteExpiresAt = activeRequest?.quotation?.expiresAt
+    ? new Date(activeRequest.quotation.expiresAt).getTime()
+    : null;
+  const isQuoteExpired = quoteExpiresAt ? Date.now() > quoteExpiresAt : false;
+  const hoursRemaining = quoteExpiresAt
+    ? Math.max(0, Math.round((quoteExpiresAt - Date.now()) / (1000 * 60 * 60)))
+    : 48;
+
+  const handleRecalculateQuote = () => {
+    if (!activeRequest?.quotation) return;
+    const currentRate = getBenchmarkFxRate();
+    const newTotalNgn = Math.round(activeRequest.quotation.totalGbp * currentRate);
+    const deposit70 = Math.round(newTotalNgn * 0.7);
+    const balance30 = newTotalNgn - deposit70;
+
+    updateRequestStatus(activeRequest.id, 'quoted', {
+      quotation: {
+        ...activeRequest.quotation,
+        fxRate: currentRate,
+        totalNgn: newTotalNgn,
+        quotedAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
+        splitMilestone: {
+          deposit70Ngn: deposit70,
+          balance30Ngn: balance30,
+        },
+      },
+      adminNotes: `Quotation updated by customer to prevailing FX rate ₦${currentRate.toLocaleString()}/£.`,
+    });
+    onRefresh();
+    alert(`Quotation refreshed to prevailing rate: £1.00 = ₦${currentRate.toLocaleString()}. 48-hour price lock renewed!`);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,14 +110,34 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
   const currentStageIndex = activeRequest ? getStageIndex(activeRequest.status) : 0;
 
   const handleApproveAndPay = () => {
-    if (!activeRequest) return;
+    if (!activeRequest || !activeRequest.quotation) return;
     setPaymentProcessing(true);
+
+    const quotation = activeRequest.quotation;
+    const totalNgn = quotation.totalNgn;
+    const deposit70 =
+      quotation.splitMilestone?.deposit70Ngn ||
+      Math.round(totalNgn * 0.7);
+    const balance30 =
+      quotation.splitMilestone?.balance30Ngn ||
+      totalNgn - deposit70;
+
+    const amountPaid = paymentPlan === 'split_70_30' ? deposit70 : totalNgn;
 
     setTimeout(() => {
       setPaymentProcessing(false);
       setPaymentSuccess(true);
       updateRequestStatus(activeRequest.id, 'approved', {
-        adminNotes: 'Customer approved quotation and completed simulated Naira payment.',
+        paymentMilestone: {
+          type: paymentPlan,
+          depositPaidNgn: amountPaid,
+          balanceDueNgn: paymentPlan === 'split_70_30' ? balance30 : 0,
+          depositPaidAt: new Date().toISOString(),
+        },
+        adminNotes:
+          paymentPlan === 'split_70_30'
+            ? `Customer paid 70% deposit (₦${deposit70.toLocaleString()}). Balance ₦${balance30.toLocaleString()} due upon QC photo inspection.`
+            : `Customer paid 100% full amount (₦${totalNgn.toLocaleString()}). Ready for immediate retail purchase.`,
       });
       onRefresh();
 
@@ -342,7 +399,12 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
                   <span className="font-mono font-medium">£{activeRequest.quotation.sourcingFeeGbp.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>3. International Air Freight to Lagos (£9.50/kg):</span>
+                  <span>
+                    3. International Air Freight to Lagos (
+                    {activeRequest.quotation.billableWeightKg || 2}kg @ £9.50/kg
+                    {activeRequest.quotation.isVolumetricWeight ? ' · Volumetric IATA' : ''}
+                    ):
+                  </span>
                   <span className="font-mono font-medium">£{activeRequest.quotation.airFreightGbp.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
@@ -372,35 +434,97 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
                     </span>
                   </div>
                 </div>
+
+                {/* Split Milestone 70/30 Information Card */}
+                {activeRequest.status === 'quoted' && (
+                  <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs">
+                    <div className="flex items-center justify-between font-bold text-emerald-950 mb-1.5">
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        <span>Available Risk-Free Split Milestone (70% / 30%)</span>
+                      </span>
+                      <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-semibold">
+                        Customer Protection
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-emerald-900">
+                      <div className="bg-white p-2 rounded-lg border border-emerald-100">
+                        <div className="font-semibold text-slate-700">1. Procurement Deposit (70%):</div>
+                        <div className="font-mono font-bold text-sm text-emerald-800">
+                          ₦{(activeRequest.quotation.splitMilestone?.deposit70Ngn || Math.round(activeRequest.quotation.totalNgn * 0.7)).toLocaleString()}
+                        </div>
+                        <div className="text-[10px] text-slate-500">Funds retail store purchase in London</div>
+                      </div>
+                      <div className="bg-white p-2 rounded-lg border border-emerald-100">
+                        <div className="font-semibold text-slate-700">2. Final Balance (30%):</div>
+                        <div className="font-mono font-bold text-sm text-slate-800">
+                          ₦{(activeRequest.quotation.splitMilestone?.balance30Ngn || (activeRequest.quotation.totalNgn - Math.round(activeRequest.quotation.totalNgn * 0.7))).toLocaleString()}
+                        </div>
+                        <div className="text-[10px] text-slate-500">Due only after you inspect QC photos before flight</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Action buttons based on status */}
             {activeRequest.status === 'quoted' && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-1.5 text-xs text-amber-800">
-                  <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Quotation locked for 48 hours to protect against foreign exchange fluctuations.</span>
-                </div>
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                {isQuoteExpired ? (
+                  <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 text-amber-900">
+                      <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                      <div>
+                        <strong>48-Hour Price Lock Expired:</strong> Prevailing FX benchmark rates have updated since this quote was issued.
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRecalculateQuote}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition shrink-0 cursor-pointer"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Refresh to Today's FX Benchmark</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                      <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>
+                        <strong>48h Price Guarantee Active:</strong> {hoursRemaining} hours remaining on locked rate.
+                      </span>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowPaymentModal(true)}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm"
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Approve & Authorise Purchase (Pay in ₦)</span>
-                </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowPaymentModal(true)}
+                      className="w-full sm:w-auto px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      <span>Approve & Authorise Purchase (Pay in ₦)</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
             {activeRequest.status === 'approved' && (
-              <div className="p-3 bg-emerald-100 border border-emerald-300 rounded-xl text-emerald-900 text-xs flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-700 shrink-0" />
-                <span>
-                  <strong>Quotation Approved!</strong> Your pre-funded payment has been received in Naira and converted
-                  to GBP. UK operator is purchasing directly from the retailer.
-                </span>
+              <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 text-xs space-y-1 mt-4">
+                <div className="flex items-center gap-2 font-bold text-sm text-emerald-950">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Quotation Approved & Purchase Pre-Funded!</span>
+                </div>
+                {activeRequest.paymentMilestone?.type === 'split_70_30' ? (
+                  <p className="text-slate-700 text-xs">
+                    🛡️ <strong>Split Milestone Active:</strong> 70% deposit of <strong>₦{activeRequest.paymentMilestone.depositPaidNgn?.toLocaleString()}</strong> received. Our UK agent is physically purchasing from {activeRequest.quotation.retailerFound}. Remaining 30% balance (<strong>₦{activeRequest.paymentMilestone.balanceDueNgn?.toLocaleString()}</strong>) will be due only after you inspect the paper receipt & QC photos below!
+                  </p>
+                ) : (
+                  <p className="text-slate-700 text-xs">
+                    Your full payment in Naira was successfully secured. Our UK agent is physically purchasing from {activeRequest.quotation.retailerFound}.
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -539,16 +663,77 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
               Pay 100% locally in Naira. We convert to GBP and purchase directly from the UK merchant.
             </p>
 
+            {/* Choose Milestone Plan */}
+            <div className="mb-4">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Choose Payment Milestone:
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan('split_70_30')}
+                  className={`p-3 rounded-xl border text-left transition cursor-pointer ${
+                    paymentPlan === 'split_70_30'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-950 ring-2 ring-emerald-500'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="font-bold flex items-center justify-between text-xs">
+                    <span>Split 70% / 30%</span>
+                    <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded-full font-semibold">
+                      Safe
+                    </span>
+                  </div>
+                  <div className="font-mono font-bold text-emerald-800 text-xs mt-1">
+                    ₦{(activeRequest.quotation.splitMilestone?.deposit70Ngn || Math.round(activeRequest.quotation.totalNgn * 0.7)).toLocaleString()}
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                    70% deposit now. 30% balance after inspecting QC photos!
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan('full')}
+                  className={`p-3 rounded-xl border text-left transition cursor-pointer ${
+                    paymentPlan === 'full'
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="font-bold text-xs">100% Full Payment</div>
+                  <div className={`font-mono font-bold text-xs mt-1 ${paymentPlan === 'full' ? 'text-emerald-300' : 'text-slate-900'}`}>
+                    ₦{activeRequest.quotation.totalNgn.toLocaleString()}
+                  </div>
+                  <div className={`text-[10px] mt-0.5 leading-tight ${paymentPlan === 'full' ? 'text-slate-300' : 'text-slate-500'}`}>
+                    One-time payment. Direct priority purchase.
+                  </div>
+                </button>
+              </div>
+            </div>
+
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 mb-4 text-xs">
               <div className="flex justify-between mb-1">
-                <span className="text-slate-500">Payable Amount:</span>
+                <span className="text-slate-500">
+                  {paymentPlan === 'split_70_30' ? 'Stage 1 Deposit Payable Now:' : 'Total Payable Amount:'}
+                </span>
                 <strong className="font-mono text-slate-900 text-sm">
-                  ₦{activeRequest.quotation.totalNgn.toLocaleString()}
+                  ₦{(paymentPlan === 'split_70_30'
+                    ? (activeRequest.quotation.splitMilestone?.deposit70Ngn || Math.round(activeRequest.quotation.totalNgn * 0.7))
+                    : activeRequest.quotation.totalNgn
+                  ).toLocaleString()}
                 </strong>
               </div>
               <div className="flex justify-between text-slate-500 text-[11px]">
-                <span>Equivalent in GBP:</span>
-                <span>£{activeRequest.quotation.totalGbp.toFixed(2)}</span>
+                <span>
+                  {paymentPlan === 'split_70_30' ? 'Stage 2 Balance (Due after QC photos):' : 'Equivalent in GBP:'}
+                </span>
+                <span>
+                  {paymentPlan === 'split_70_30'
+                    ? `₦${(activeRequest.quotation.splitMilestone?.balance30Ngn || (activeRequest.quotation.totalNgn - Math.round(activeRequest.quotation.totalNgn * 0.7))).toLocaleString()}`
+                    : `£${activeRequest.quotation.totalGbp.toFixed(2)}`
+                  }
+                </span>
               </div>
             </div>
 
@@ -598,7 +783,7 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
               <button
                 type="button"
                 onClick={() => setShowPaymentModal(false)}
-                className="w-1/3 py-2.5 border border-slate-300 text-slate-700 font-medium rounded-xl text-xs hover:bg-slate-50 transition"
+                className="w-1/3 py-2.5 border border-slate-300 text-slate-700 font-medium rounded-xl text-xs hover:bg-slate-50 transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -607,7 +792,7 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
                 type="button"
                 disabled={paymentProcessing}
                 onClick={handleApproveAndPay}
-                className="w-2/3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition"
+                className="w-2/3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition cursor-pointer shadow-sm"
               >
                 {paymentProcessing ? (
                   <span>Securing GBP Funds...</span>
@@ -617,7 +802,12 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
                     <span>Payment Approved!</span>
                   </>
                 ) : (
-                  <span>Confirm ₦{activeRequest.quotation.totalNgn.toLocaleString()}</span>
+                  <span>
+                    Authorise ₦{(paymentPlan === 'split_70_30'
+                      ? (activeRequest.quotation.splitMilestone?.deposit70Ngn || Math.round(activeRequest.quotation.totalNgn * 0.7))
+                      : activeRequest.quotation.totalNgn
+                    ).toLocaleString()}
+                  </span>
                 )}
               </button>
             </div>

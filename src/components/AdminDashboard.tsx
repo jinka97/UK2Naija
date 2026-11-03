@@ -64,6 +64,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [sourcingNotes, setSourcingNotes] = useState<string>('Verified genuine stock with UK warranty.');
   const [deliveryDays, setDeliveryDays] = useState<string>('5-7 business days');
 
+  // Volumetric Weight State (for bulky items like Smiggle bags, boot boxes)
+  const [showVolumetricCalc, setShowVolumetricCalc] = useState<boolean>(false);
+  const [lengthCm, setLengthCm] = useState<string>('');
+  const [widthCm, setWidthCm] = useState<string>('');
+  const [heightCm, setHeightCm] = useState<string>('');
+
   // Purchase proof builder
   const [storeNameInput, setStoreNameInput] = useState<string>('Boots Victoria London');
   const [receiptNumberInput, setReceiptNumberInput] = useState<string>('REC-UK-' + Math.floor(10000 + Math.random() * 90000));
@@ -99,11 +105,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const parsedCustomRate = parseFloat(customRateInput);
   const activeFxRate = !isNaN(parsedCustomRate) && parsedCustomRate > 0 ? Math.round(parsedCustomRate) : fxState.rate;
 
+  // Volumetric vs Actual Weight Calculation
+  const parsedL = parseFloat(lengthCm) || 0;
+  const parsedW = parseFloat(widthCm) || 0;
+  const parsedH = parseFloat(heightCm) || 0;
+  const volumetricWeightKg =
+    parsedL > 0 && parsedW > 0 && parsedH > 0
+      ? Math.round(((parsedL * parsedW * parsedH) / 6000) * 10) / 10
+      : 0;
+  const isVolumetricHigher = showVolumetricCalc && volumetricWeightKg > weightKgInput;
+  const billableWeightKg = isVolumetricHigher ? volumetricWeightKg : weightKgInput;
+
   // Calculate quote line items dynamically
   const calculatedFee = Math.max(ukPriceInput * SOURCING_FEE_PCT, SOURCING_FEE_MIN);
-  const calculatedFreight = weightKgInput * AIR_FREIGHT_PER_KG;
+  const calculatedFreight = billableWeightKg * AIR_FREIGHT_PER_KG;
   const calculatedTotalGbp = ukPriceInput + calculatedFee + calculatedFreight + CUSTOMS_CLEARING_FLAT;
   const calculatedTotalNgn = Math.round(calculatedTotalGbp * activeFxRate);
+
+  // 70% / 30% Split Milestone Calculation
+  const deposit70Ngn = Math.round(calculatedTotalNgn * 0.7);
+  const balance30Ngn = calculatedTotalNgn - deposit70Ngn;
 
   const handleIssueQuote = () => {
     if (!activeRequest) return;
@@ -122,11 +143,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       estimatedDeliveryDays: deliveryDays,
       quotedAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
+      billableWeightKg,
+      isVolumetricWeight: isVolumetricHigher,
+      dimensionsCm:
+        parsedL > 0 && parsedW > 0 && parsedH > 0
+          ? { length: parsedL, width: parsedW, height: parsedH }
+          : undefined,
+      splitMilestone: {
+        deposit70Ngn,
+        balance30Ngn,
+      },
     };
 
     updateRequestStatus(activeRequest.id, 'quoted', {
       quotation: newQuotation,
-      adminNotes: `Quotation issued by UK desk: £${calculatedTotalGbp.toFixed(2)} (₦${calculatedTotalNgn.toLocaleString()})`,
+      adminNotes: `Quotation issued by UK desk: £${calculatedTotalGbp.toFixed(2)} (₦${calculatedTotalNgn.toLocaleString()}) with 48h FX lock.`,
     });
 
     onRefresh();
@@ -181,16 +212,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleGenerateWhatsAppLink = (req: CustomerRequest) => {
     const phone = req.whatsappPhone.replace(/[^0-9]/g, '');
-    let msg = `Hello ${req.customerName}, this is your UK2Naija personal shopping concierge regarding request ${req.id}.`;
+    let msg = `Hello ${req.customerName}, this is your UK2Naija personal shopping concierge regarding request *${req.id}*.\n\n`;
 
     if (req.status === 'submitted') {
-      msg += ` We have received your request for "${req.items[0]?.name}" and are checking stock with verified UK retailers.`;
+      msg += `We have received your request for "${req.items[0]?.name}" and our London desk is actively checking stock with verified UK retailers.`;
     } else if (req.status === 'quoted' && req.quotation) {
-      msg += ` Good news! We've secured pricing for your item from ${req.quotation.retailerFound}. Total landed cost to your doorstep in ${req.deliveryCity} is ₦${req.quotation.totalNgn.toLocaleString()} (£${req.quotation.totalGbp.toFixed(2)}). Zero customs surcharge. Reply here or visit your portal to approve!`;
+      const q = req.quotation;
+      const dep70 = q.splitMilestone?.deposit70Ngn || Math.round(q.totalNgn * 0.7);
+      const bal30 = q.splitMilestone?.balance30Ngn || (q.totalNgn - dep70);
+      msg = `🇬🇧 *UK2Naija Sourcing Quotation* 🇳🇬\n` +
+        `Hello ${req.customerName}! Your official landed cost quote is ready for *${req.id}*.\n\n` +
+        `📦 *Item Wishlist:* ${req.items.map((i) => `${i.name || 'UK Product'} (Qty: ${i.quantity})`).join(', ')}\n` +
+        `📍 *Destination:* ${req.deliveryCity}\n` +
+        `🏬 *Retailer Identified:* ${q.retailerFound}\n\n` +
+        `💰 *Transparent Landed Cost Breakdown:*\n` +
+        `• 1. UK Retail Store Price: £${q.ukRetailPriceGbp.toFixed(2)}\n` +
+        `• 2. UK Sourcing & Inspection Fee: £${q.sourcingFeeGbp.toFixed(2)}\n` +
+        `• 3. Air Freight: £${q.airFreightGbp.toFixed(2)} (${q.billableWeightKg || 2}kg${q.isVolumetricWeight ? ' Volumetric' : ''})\n` +
+        `• 4. Port Customs DDP Handling: £${q.customsHandlingGbp.toFixed(2)}\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `*Total Landed Cost:* £${q.totalGbp.toFixed(2)}\n` +
+        `*Prevailing Benchmark Rate:* £1.00 = ₦${q.fxRate.toLocaleString()}\n` +
+        `*Total Payable in Naira:* *₦${q.totalNgn.toLocaleString()}*\n\n` +
+        `🛡️ *Flexible Payment Options:*\n` +
+        `• *Option A (100% Full Payment):* ₦${q.totalNgn.toLocaleString()}\n` +
+        `• *Option B (Split Milestone):* Pay 70% deposit now (₦${dep70.toLocaleString()}) to lock store purchase; pay 30% balance (₦${bal30.toLocaleString()}) upon inspecting QC photos!\n\n` +
+        `⏳ *Price Guarantee:* Rate locked for 48 hours.\n` +
+        `Reply here to approve, or check your customer tracking link to proceed.`;
     } else if (req.status === 'purchased') {
-      msg += ` Your item has been purchased in London and passed our 5-point physical QC inspection! Tamper seals verified. Preparing for Friday flight to Lagos.`;
+      msg += `Your item has been purchased in London and passed our 5-point physical QC inspection! Tamper seals and UK VAT receipt verified. Preparing for scheduled air cargo flight.`;
     } else if (req.status === 'dispatched' && req.dispatchInfo) {
-      msg += ` Great news! Your package is in transit via ${req.dispatchInfo.carrier} (AWB: ${req.dispatchInfo.trackingNumber}). Delivery to ${req.deliveryCity} is scheduled for ${req.dispatchInfo.deliveryEstimatedDate}.`;
+      msg += `Great news! Your package is in transit via ${req.dispatchInfo.carrier} (AWB: ${req.dispatchInfo.trackingNumber}). Delivery to ${req.deliveryCity} is scheduled for ${req.dispatchInfo.deliveryEstimatedDate}.`;
     }
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
@@ -536,14 +588,67 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 mb-1 font-medium">Estimated Billable Weight (kg) *</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={weightKgInput}
-                    onChange={(e) => setWeightKgInput(parseFloat(e.target.value) || 0.1)}
-                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-800 font-mono"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-slate-600 font-medium">Billable Weight (kg) *</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowVolumetricCalc(!showVolumetricCalc)}
+                      className="text-[10px] text-emerald-700 hover:underline font-semibold"
+                    >
+                      {showVolumetricCalc ? 'Hide Volumetric' : '+ Bulky Box Calc (L×W×H)'}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={weightKgInput}
+                      onChange={(e) => setWeightKgInput(parseFloat(e.target.value) || 0.1)}
+                      className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-800 font-mono"
+                      placeholder="Actual kg"
+                    />
+                    {isVolumetricHigher && (
+                      <span className="text-[10px] font-bold px-1.5 py-1 rounded bg-amber-100 text-amber-900 shrink-0 border border-amber-300">
+                        Volumetric {billableWeightKg}kg applied
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Volumetric Dimensions Panel (for Smiggle pencil cases/backpacks, shoeboxes, bulky apparel) */}
+                  {showVolumetricCalc && (
+                    <div className="mt-2 p-2 bg-amber-50/80 rounded-lg border border-amber-200 text-[11px] space-y-1.5">
+                      <div className="font-semibold text-amber-950 flex items-center justify-between">
+                        <span>Parcel Dimensions (cm) / 6000:</span>
+                        <span className="font-mono text-amber-800 font-bold">{volumetricWeightKg} kg vol.</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <input
+                          type="number"
+                          placeholder="L (cm)"
+                          value={lengthCm}
+                          onChange={(e) => setLengthCm(e.target.value)}
+                          className="px-2 py-1 bg-white border border-amber-300 rounded text-slate-800 font-mono text-xs"
+                        />
+                        <input
+                          type="number"
+                          placeholder="W (cm)"
+                          value={widthCm}
+                          onChange={(e) => setWidthCm(e.target.value)}
+                          className="px-2 py-1 bg-white border border-amber-300 rounded text-slate-800 font-mono text-xs"
+                        />
+                        <input
+                          type="number"
+                          placeholder="H (cm)"
+                          value={heightCm}
+                          onChange={(e) => setHeightCm(e.target.value)}
+                          className="px-2 py-1 bg-white border border-amber-300 rounded text-slate-800 font-mono text-xs"
+                        />
+                      </div>
+                      <p className="text-[10px] text-amber-800 leading-tight">
+                        IATA air cargo standard: bulky lightweight items (e.g. Smiggle backpacks, Next shoe boxes) are billed on volumetric weight if larger than dead weight.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -619,7 +724,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <span className="font-mono">£{calculatedFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>Air Freight ({weightKgInput}kg @ £9.50/kg):</span>
+                  <span>
+                    Air Freight ({billableWeightKg}kg @ £9.50/kg
+                    {isVolumetricHigher ? ' — Volumetric IATA applied' : ''}):
+                  </span>
                   <span className="font-mono">£{calculatedFreight.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
@@ -638,6 +746,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </span>
                   </div>
                   <span className="font-mono text-emerald-300 text-base">₦{calculatedTotalNgn.toLocaleString()}</span>
+                </div>
+
+                {/* 70/30 Split Milestone Preview */}
+                <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200 mt-2 text-[11px] space-y-1">
+                  <div className="flex items-center justify-between font-bold text-emerald-950">
+                    <span>🛡️ Customer Split Milestone (70% / 30%):</span>
+                    <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-semibold">
+                      Risk-Free Conversion
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-emerald-900">
+                    <span>Stage 1 Deposit (70%):</span>
+                    <span className="font-mono font-bold">₦{deposit70Ngn.toLocaleString()} (for London store purchase)</span>
+                  </div>
+                  <div className="flex justify-between text-emerald-900">
+                    <span>Stage 2 Balance (30%):</span>
+                    <span className="font-mono font-bold">₦{balance30Ngn.toLocaleString()} (due after QC photos, before flight)</span>
+                  </div>
+                  <div className="text-[10px] text-emerald-700 italic pt-0.5 border-t border-emerald-200">
+                    ⏳ 48-Hour Price Guarantee: customer rate locked for 48 hours upon issuance.
+                  </div>
                 </div>
               </div>
 

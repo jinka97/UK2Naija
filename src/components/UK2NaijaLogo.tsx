@@ -80,10 +80,6 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
             strokeLinejoin="round"
           />
 
-          {/* Center Nexus: Stylized connecting hub */}
-          <circle cx="22" cy="21.5" r="2.2" fill="#10b981" />
-          <circle cx="22" cy="21.5" r="0.9" fill="#f8fafc" />
-
           {/* Inbound Arrow: Naija ➔ UK (Azure Counter-flow Path, flowing Bottom-Right to Bottom-Left) */}
           <path
             d="M 32 26.5 C 27 29, 17 29, 12 26.5"
@@ -133,13 +129,7 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
         <div className="flex flex-col">
           <div className={`flex items-center tracking-tight leading-none ${textSizes[size]}`}>
             <span className={`font-black ${isLight ? 'text-white' : 'text-slate-900'}`}>UK</span>
-            <span className="font-extrabold text-emerald-500 px-0.5 relative">
-              2
-              {/* Micro bidirectional arrows above '2' */}
-              <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-[7px] text-emerald-400 font-sans tracking-tighter opacity-80">
-                ⇄
-              </span>
-            </span>
+            <span className="font-extrabold text-emerald-500 px-0.5">2</span>
             <span className={`font-black ${isLight ? 'text-emerald-400' : 'text-emerald-600'}`}>Naija</span>
           </div>
 

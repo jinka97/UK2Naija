@@ -31,7 +31,7 @@ interface CustomerRequestFormProps {
   onClearInitialStore?: () => void;
 }
 
-const CATEGORIES = [
+const CATEGORIES_UK_TO_NG = [
   { name: 'Fashion & Accessories', icon: '👞', examples: 'Next UK, Marks & Spencer, Clarks UK, Ralph Lauren' },
   { name: 'Kids & School Stationery', icon: '🎒', examples: 'Smiggle backpacks, lunchboxes, school uniforms' },
   { name: 'Designer Clearance & Luxury', icon: '💎', examples: 'TK Maxx fragrances, designer bags, Le Creuset' },
@@ -40,7 +40,15 @@ const CATEGORIES = [
   { name: 'Baby & Infant Care', icon: '🍼', examples: 'Aptamil Profutura, Kendamil, Cow & Gate, NUK' },
 ];
 
-const POPULAR_PRESETS = [
+const CATEGORIES_NG_TO_UK = [
+  { name: 'Foodstuffs & Spices', icon: '🍲', examples: 'Poundo yam, crayfish, dry catfish, ogbono, egusi, palm oil' },
+  { name: 'African Attire & Aso Oke', icon: '👑', examples: 'Hand-woven Aso Oke, bespoke Agbada, Ankara lace, Gele' },
+  { name: 'Natural Beauty & Herbal', icon: '🌿', examples: 'Organic raw shea butter, Dudu-Osun black soap, Zobo/hibiscus' },
+  { name: 'Arts, Crafts & Cultural', icon: '🏺', examples: 'Traditional wooden carvings, coral wedding beads, bespoke gifts' },
+  { name: 'Books & Educational', icon: '📚', examples: 'African literature, vernacular textbooks, university transcripts' },
+];
+
+const POPULAR_PRESETS_UK_TO_NG = [
   {
     category: 'Kids & School Stationery',
     title: 'Smiggle Hardtop Scented Pencil Case & Double Decker Lunchbox',
@@ -97,6 +105,36 @@ const POPULAR_PRESETS = [
   },
 ];
 
+const POPULAR_PRESETS_NG_TO_UK = [
+  {
+    category: 'Foodstuffs & Spices',
+    title: 'Authentic Nigerian Foodstuff Bundle (Poundo, Crayfish, Dried Fish)',
+    brand: 'Nigerian Market Sourcing',
+    qty: 1,
+    budget: '50-150' as BudgetOption,
+    specs: '5kg Ayoola Poundo Yam, 1kg peeled crayfish, 1kg dried smoked catfish, 1kg melon seeds (egusi). Vacuum-sealed & phytosanitary pre-cleared for UK entry.',
+    url: '',
+  },
+  {
+    category: 'African Attire & Aso Oke',
+    title: 'Custom Hand-Woven Aso Oke Wedding Outfit & Gele Head-tie',
+    brand: 'Iseyin / Oyo Heritage Weavers',
+    qty: 1,
+    budget: '150-500' as BudgetOption,
+    specs: 'Complete couple wedding ensemble: bespoke embroidered Agbada and matching Gele & Ipele set.',
+    url: '',
+  },
+  {
+    category: 'Natural Beauty & Herbal',
+    title: 'Pure Organic Raw Shea Butter (2kg) & Natural Black Soap',
+    brand: 'Kwara / Niger State Natural Co-op',
+    qty: 2,
+    budget: 'under50' as BudgetOption,
+    specs: 'Grade-A unrefined yellow shea butter, 100% natural Dudu-Osun cold-pressed soap.',
+    url: '',
+  },
+];
+
 
 export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
   onRequestSubmitted,
@@ -107,7 +145,8 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
   onClearInitialStore,
 }) => {
   // Primary Form State
-  const [category, setCategory] = useState<string>('Electronics & Audio');
+  const [tradeCorridor, setTradeCorridor] = useState<'uk-to-ng' | 'ng-to-uk'>('uk-to-ng');
+  const [category, setCategory] = useState<string>('Fashion & Accessories');
   const [items, setItems] = useState<ProductItem[]>([
     {
       id: 'item-' + Date.now(),
@@ -171,7 +210,10 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
     }
   }, [initialStore, initialItemName]);
 
-  const handleApplyPreset = (preset: (typeof POPULAR_PRESETS)[0]) => {
+  const activeCategories = tradeCorridor === 'uk-to-ng' ? CATEGORIES_UK_TO_NG : CATEGORIES_NG_TO_UK;
+  const activePresets = tradeCorridor === 'uk-to-ng' ? POPULAR_PRESETS_UK_TO_NG : POPULAR_PRESETS_NG_TO_UK;
+
+  const handleApplyPreset = (preset: (typeof POPULAR_PRESETS_UK_TO_NG)[0] | (typeof POPULAR_PRESETS_NG_TO_UK)[0]) => {
     setCategory(preset.category);
     setBudget(preset.budget);
     setItems([
@@ -279,6 +321,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
     }
 
     const newReq = createNewRequest({
+      corridor: tradeCorridor,
       customerName: customerName.trim() || 'Valued Customer',
       whatsappPhone: whatsappPhone.trim(),
       deliveryCity,
@@ -415,12 +458,51 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           <UK2NaijaLogo size="md" />
         </div>
 
+        {/* Bidirectional Corridor Switcher */}
+        <div className="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              setTradeCorridor('uk-to-ng');
+              setCategory(CATEGORIES_UK_TO_NG[0].name);
+              setDeliveryCity('Lagos (Lekki / Ikoyi / Victoria Island)');
+            }}
+            className={`flex items-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              tradeCorridor === 'uk-to-ng'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>🇬🇧 ➔ 🇳🇬</span>
+            <span>UK to Nigeria (Sourcing)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setTradeCorridor('ng-to-uk');
+              setCategory(CATEGORIES_NG_TO_UK[0].name);
+              setDeliveryCity('London (Greater London Hub & Doorstep)');
+            }}
+            className={`flex items-center gap-2 px-3.5 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              tradeCorridor === 'ng-to-uk'
+                ? 'bg-emerald-800 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>🇳🇬 ➔ 🇬🇧</span>
+            <span>Nigeria to UK (Diaspora Export)</span>
+          </button>
+        </div>
+
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-          What would you like us to find?
+          {tradeCorridor === 'uk-to-ng'
+            ? 'What would you like us to find in the UK?'
+            : 'What Nigerian goods do you want delivered to the UK?'}
         </h1>
         <p className="text-slate-600 text-base sm:text-lg max-w-xl mx-auto mb-8">
-          Quality products, sourced directly from verified UK merchants, with a personal touch. You request it, we source, verify, and
-          deliver to your door in Nigeria.
+          {tradeCorridor === 'uk-to-ng'
+            ? 'Quality products, sourced directly from verified UK merchants, with a personal touch. You request it, we source, verify, and deliver to your door in Nigeria.'
+            : 'Authentic Nigerian foodstuffs, native spices, Aso Oke, bespoke attire, and cultural essentials procured in Nigeria and delivered to your UK doorstep.'}
         </p>
 
         {/* Tell us what you're looking for - Quick Search Box */}
@@ -481,7 +563,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
             Browse Popular Categories
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 max-w-3xl mx-auto">
-            {CATEGORIES.map((cat) => (
+            {activeCategories.map((cat) => (
               <button
                 key={cat.name}
                 type="button"
@@ -552,9 +634,21 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
       {/* Selected Sourcing Store Banner (if user came from recommended sites directory) */}
       {initialStore && (
         <div className="mb-6 p-4 bg-emerald-50 border-2 border-emerald-300 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center text-xs tracking-wider shrink-0 shadow-xs">
-              {initialStore.logoText || 'UK'}
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className={`min-w-[70px] max-w-[85px] h-10 px-2 rounded-xl ${
+                initialStore.accentColor
+                  ? `bg-gradient-to-br ${initialStore.accentColor}`
+                  : 'bg-gradient-to-br from-slate-950 to-slate-800'
+              } text-white font-black flex items-center justify-center ${
+                (initialStore.logoText || initialStore.name).length > 8
+                  ? 'text-[8.5px]'
+                  : (initialStore.logoText || initialStore.name).length > 5
+                  ? 'text-[10px]'
+                  : 'text-xs'
+              } tracking-tight shrink-0 shadow-xs border border-white/10 uppercase select-none`}
+            >
+              <span className="truncate">{initialStore.logoText || 'UK'}</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -600,13 +694,13 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-600" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Popular Sourced Products from the UK
+              {tradeCorridor === 'uk-to-ng' ? 'Popular Sourced Products from the UK' : 'Popular Diaspora Exports from Nigeria'}
             </h3>
           </div>
           <span className="text-xs text-slate-500">Click to autofill request form</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {POPULAR_PRESETS.map((preset, idx) => (
+          {activePresets.map((preset, idx) => (
             <button
               key={idx}
               onClick={() => handleApplyPreset(preset)}
@@ -668,7 +762,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
               1. What category best describes this item?
             </label>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((cat) => (
+              {activeCategories.map((cat) => (
                 <button
                   type="button"
                   key={cat.name}
@@ -980,82 +1074,142 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
 
               <div className="sm:col-span-4">
                 <label className="block text-[11px] font-medium text-slate-600 mb-1">
-                  Destination in Nigeria *
+                  {tradeCorridor === 'uk-to-ng' ? 'Destination in Nigeria *' : 'Delivery Destination in the UK *'}
                 </label>
-                <select
-                  value={deliveryCity}
-                  onChange={(e) => setDeliveryCity(e.target.value)}
-                  className="w-full text-xs sm:text-sm px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-slate-900"
-                >
-                  <optgroup label="Northern Nigeria Hubs">
-                    <option value="Kano (Bompai / Nassarawa / Kano State)">Kano (Bompai / Nassarawa / Kano State)</option>
-                    <option value="Kaduna (Kaduna North / Barnawa / Kaduna State)">Kaduna (Kaduna North / Barnawa / Kaduna State)</option>
-                    <option value="Jos (Rayfield / Jos North / Plateau State)">Jos (Rayfield / Jos North / Plateau State)</option>
-                    <option value="Zaria (Samaru / Zaria City / Kaduna State)">Zaria (Samaru / Zaria City / Kaduna State)</option>
-                    <option value="Minna (Tunga / Chanchaga / Niger State)">Minna (Tunga / Chanchaga / Niger State)</option>
-                    <option value="Sokoto (Sokoto Central / GRA / Sokoto State)">Sokoto (Sokoto Central / GRA / Sokoto State)</option>
-                    <option value="Ilorin (GRA / Tanke / Kwara State)">Ilorin (GRA / Tanke / Kwara State)</option>
-                    <option value="Maiduguri (GRA / Borno State Hub)">Maiduguri (GRA / Borno State Hub)</option>
-                    <option value="Katsina (Katsina Central / GRA)">Katsina (Katsina Central / GRA)</option>
-                    <option value="Bauchi (Bauchi Central / GRA)">Bauchi (Bauchi Central / GRA)</option>
-                    <option value="Yola / Jimeta (Adamawa State)">Yola / Jimeta (Adamawa State)</option>
-                  </optgroup>
-                  <optgroup label="Federal Capital Territory (FCT)">
-                    <option value="Abuja (Maitama / Wuse II / Asokoro)">Abuja (Maitama / Wuse II / Asokoro)</option>
-                    <option value="Abuja (Garki / CBD / Central Area)">Abuja (Garki / CBD / Central Area)</option>
-                    <option value="Abuja (Gwarinpa / Life Camp / Jabi)">Abuja (Gwarinpa / Life Camp / Jabi)</option>
-                    <option value="Abuja (Kubwa / Lugbe Airport Rd)">Abuja (Kubwa / Lugbe Airport Rd)</option>
-                  </optgroup>
-                  <optgroup label="South West Hubs">
-                    <option value="Lagos (Lekki / Ikoyi / Victoria Island)">Lagos (Lekki / Ikoyi / Victoria Island)</option>
-                    <option value="Lagos (Ikeja GRA / Maryland / Mainland)">Lagos (Ikeja GRA / Maryland / Mainland)</option>
-                    <option value="Lagos (Surulere / Yaba Tech Hub)">Lagos (Surulere / Yaba Tech Hub)</option>
-                    <option value="Ibadan (Bodija / Jericho / Oyo State)">Ibadan (Bodija / Jericho / Oyo State)</option>
-                    <option value="Abeokuta (GRA / Ibara / Ogun State)">Abeokuta (GRA / Ibara / Ogun State)</option>
-                    <option value="Akure (Alagbaka / Ondo State)">Akure (Alagbaka / Ondo State)</option>
-                  </optgroup>
-                  <optgroup label="South South & South East Hubs">
-                    <option value="Port Harcourt (GRA / Trans-Amadi / Rivers)">Port Harcourt (GRA / Trans-Amadi / Rivers)</option>
-                    <option value="Enugu (Independence Layout / Enugu State)">Enugu (Independence Layout / Enugu State)</option>
-                    <option value="Benin City (GRA / Airport Rd / Edo State)">Benin City (GRA / Airport Rd / Edo State)</option>
-                    <option value="Warri / Asaba (Delta State)">Warri / Asaba (Delta State)</option>
-                    <option value="Calabar (Marian / Cross River)">Calabar (Marian / Cross River)</option>
-                    <option value="Uyo (Ewet Housing / Akwa Ibom)">Uyo (Ewet Housing / Akwa Ibom)</option>
-                    <option value="Owerri (Ikenegbu / Imo State)">Owerri (Ikenegbu / Imo State)</option>
-                  </optgroup>
-                  <optgroup label="Nationwide Courier Coverage">
-                    <option value="Other Nigerian City (Direct Courier Waybill)">Other Nigerian City (Direct Courier Waybill)</option>
-                  </optgroup>
-                </select>
-
-                {/* Quick-Pick Destination Pills */}
-                <div className="flex flex-wrap items-center gap-1 mt-1.5">
-                  <span className="text-[10px] text-slate-400 font-medium mr-0.5">Quick pick:</span>
-                  {[
-                    { label: 'Kano', val: 'Kano (Bompai / Nassarawa / Kano State)' },
-                    { label: 'Kaduna', val: 'Kaduna (Kaduna North / Barnawa / Kaduna State)' },
-                    { label: 'Jos', val: 'Jos (Rayfield / Jos North / Plateau State)' },
-                    { label: 'Abuja', val: 'Abuja (Maitama / Wuse II / Asokoro)' },
-                    { label: 'Lagos', val: 'Lagos (Lekki / Ikoyi / Victoria Island)' },
-                    { label: 'Minna', val: 'Minna (Tunga / Chanchaga / Niger State)' },
-                    { label: 'Ilorin', val: 'Ilorin (GRA / Tanke / Kwara State)' },
-                    { label: 'Sokoto', val: 'Sokoto (Sokoto Central / GRA / Sokoto State)' },
-                    { label: 'PH', val: 'Port Harcourt (GRA / Trans-Amadi / Rivers)' },
-                  ].map((chip) => (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => setDeliveryCity(chip.val)}
-                      className={`text-[10px] px-2 py-0.5 rounded-full border transition cursor-pointer ${
-                        deliveryCity.startsWith(chip.label)
-                          ? 'bg-slate-900 text-white border-slate-900 font-bold'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
-                      }`}
+                {tradeCorridor === 'uk-to-ng' ? (
+                  <>
+                    <select
+                      value={deliveryCity}
+                      onChange={(e) => setDeliveryCity(e.target.value)}
+                      className="w-full text-xs sm:text-sm px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-slate-900"
                     >
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
+                      <optgroup label="Northern Nigeria Hubs">
+                        <option value="Kano (Bompai / Nassarawa / Kano State)">Kano (Bompai / Nassarawa / Kano State)</option>
+                        <option value="Kaduna (Kaduna North / Barnawa / Kaduna State)">Kaduna (Kaduna North / Barnawa / Kaduna State)</option>
+                        <option value="Jos (Rayfield / Jos North / Plateau State)">Jos (Rayfield / Jos North / Plateau State)</option>
+                        <option value="Zaria (Samaru / Zaria City / Kaduna State)">Zaria (Samaru / Zaria City / Kaduna State)</option>
+                        <option value="Minna (Tunga / Chanchaga / Niger State)">Minna (Tunga / Chanchaga / Niger State)</option>
+                        <option value="Sokoto (Sokoto Central / GRA / Sokoto State)">Sokoto (Sokoto Central / GRA / Sokoto State)</option>
+                        <option value="Ilorin (GRA / Tanke / Kwara State)">Ilorin (GRA / Tanke / Kwara State)</option>
+                        <option value="Maiduguri (GRA / Borno State Hub)">Maiduguri (GRA / Borno State Hub)</option>
+                        <option value="Katsina (Katsina Central / GRA)">Katsina (Katsina Central / GRA)</option>
+                        <option value="Bauchi (Bauchi Central / GRA)">Bauchi (Bauchi Central / GRA)</option>
+                        <option value="Yola / Jimeta (Adamawa State)">Yola / Jimeta (Adamawa State)</option>
+                      </optgroup>
+                      <optgroup label="Federal Capital Territory (FCT)">
+                        <option value="Abuja (Maitama / Wuse II / Asokoro)">Abuja (Maitama / Wuse II / Asokoro)</option>
+                        <option value="Abuja (Garki / CBD / Central Area)">Abuja (Garki / CBD / Central Area)</option>
+                        <option value="Abuja (Gwarinpa / Life Camp / Jabi)">Abuja (Gwarinpa / Life Camp / Jabi)</option>
+                        <option value="Abuja (Kubwa / Lugbe Airport Rd)">Abuja (Kubwa / Lugbe Airport Rd)</option>
+                      </optgroup>
+                      <optgroup label="South West Hubs">
+                        <option value="Lagos (Lekki / Ikoyi / Victoria Island)">Lagos (Lekki / Ikoyi / Victoria Island)</option>
+                        <option value="Lagos (Ikeja GRA / Maryland / Mainland)">Lagos (Ikeja GRA / Maryland / Mainland)</option>
+                        <option value="Lagos (Surulere / Yaba Tech Hub)">Lagos (Surulere / Yaba Tech Hub)</option>
+                        <option value="Ibadan (Bodija / Jericho / Oyo State)">Ibadan (Bodija / Jericho / Oyo State)</option>
+                        <option value="Abeokuta (GRA / Ibara / Ogun State)">Abeokuta (GRA / Ibara / Ogun State)</option>
+                        <option value="Akure (Alagbaka / Ondo State)">Akure (Alagbaka / Ondo State)</option>
+                      </optgroup>
+                      <optgroup label="South South & South East Hubs">
+                        <option value="Port Harcourt (GRA / Trans-Amadi / Rivers)">Port Harcourt (GRA / Trans-Amadi / Rivers)</option>
+                        <option value="Enugu (Independence Layout / Enugu State)">Enugu (Independence Layout / Enugu State)</option>
+                        <option value="Benin City (GRA / Airport Rd / Edo State)">Benin City (GRA / Airport Rd / Edo State)</option>
+                        <option value="Warri / Asaba (Delta State)">Warri / Asaba (Delta State)</option>
+                        <option value="Calabar (Marian / Cross River)">Calabar (Marian / Cross River)</option>
+                        <option value="Uyo (Ewet Housing / Akwa Ibom)">Uyo (Ewet Housing / Akwa Ibom)</option>
+                        <option value="Owerri (Ikenegbu / Imo State)">Owerri (Ikenegbu / Imo State)</option>
+                      </optgroup>
+                      <optgroup label="Nationwide Courier Coverage">
+                        <option value="Other Nigerian City (Direct Courier Waybill)">Other Nigerian City (Direct Courier Waybill)</option>
+                      </optgroup>
+                    </select>
+
+                    {/* Quick-Pick Destination Pills */}
+                    <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                      <span className="text-[10px] text-slate-400 font-medium mr-0.5">Quick pick:</span>
+                      {[
+                        { label: 'Kano', val: 'Kano (Bompai / Nassarawa / Kano State)' },
+                        { label: 'Kaduna', val: 'Kaduna (Kaduna North / Barnawa / Kaduna State)' },
+                        { label: 'Jos', val: 'Jos (Rayfield / Jos North / Plateau State)' },
+                        { label: 'Abuja', val: 'Abuja (Maitama / Wuse II / Asokoro)' },
+                        { label: 'Lagos', val: 'Lagos (Lekki / Ikoyi / Victoria Island)' },
+                        { label: 'Minna', val: 'Minna (Tunga / Chanchaga / Niger State)' },
+                        { label: 'Ilorin', val: 'Ilorin (GRA / Tanke / Kwara State)' },
+                        { label: 'Sokoto', val: 'Sokoto (Sokoto Central / GRA / Sokoto State)' },
+                        { label: 'PH', val: 'Port Harcourt (GRA / Trans-Amadi / Rivers)' },
+                      ].map((chip) => (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => setDeliveryCity(chip.val)}
+                          className={`text-[10px] px-2 py-0.5 rounded-full border transition cursor-pointer ${
+                            deliveryCity.startsWith(chip.label)
+                              ? 'bg-slate-900 text-white border-slate-900 font-bold'
+                              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <select
+                      value={deliveryCity}
+                      onChange={(e) => setDeliveryCity(e.target.value)}
+                      className="w-full text-xs sm:text-sm px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-slate-900"
+                    >
+                      <optgroup label="Greater London & Surrounds">
+                        <option value="London (Greater London Hub & Doorstep)">London (Greater London Hub & Doorstep)</option>
+                        <option value="London (South London / Croydon / Lewisham / Greenwich)">London (South London / Croydon / Lewisham / Greenwich)</option>
+                        <option value="London (North & East London / Hackney / Stratford / Ilford)">London (North & East London / Hackney / Stratford / Ilford)</option>
+                        <option value="London (West London / Heathrow / Hounslow / Wembley)">London (West London / Heathrow / Hounslow / Wembley)</option>
+                      </optgroup>
+                      <optgroup label="Midlands & North">
+                        <option value="Birmingham (West Midlands / Coventry / Solihull)">Birmingham (West Midlands / Coventry / Solihull)</option>
+                        <option value="Manchester (Greater Manchester / Salford / Trafford)">Manchester (Greater Manchester / Salford / Trafford)</option>
+                        <option value="Leeds (West Yorkshire / Bradford)">Leeds (West Yorkshire / Bradford)</option>
+                        <option value="Milton Keynes (Buckinghamshire / Bedford / Luton)">Milton Keynes (Buckinghamshire / Bedford / Luton)</option>
+                        <option value="Liverpool (Merseyside / North West)">Liverpool (Merseyside / North West)</option>
+                        <option value="Sheffield (South Yorkshire)">Sheffield (South Yorkshire)</option>
+                      </optgroup>
+                      <optgroup label="Scotland & Wales">
+                        <option value="Glasgow / Edinburgh (Scotland Metro Hub)">Glasgow / Edinburgh (Scotland Metro Hub)</option>
+                        <option value="Cardiff / Swansea (Wales)">Cardiff / Swansea (Wales)</option>
+                      </optgroup>
+                      <optgroup label="UK-Wide Direct Dispatch">
+                        <option value="Other UK Postcode (Royal Mail / DPD Tracked 24/48)">Other UK Postcode (Royal Mail / DPD Tracked 24/48)</option>
+                      </optgroup>
+                    </select>
+
+                    {/* Quick-Pick Destination Pills */}
+                    <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                      <span className="text-[10px] text-slate-400 font-medium mr-0.5">Quick pick:</span>
+                      {[
+                        { label: 'London', val: 'London (Greater London Hub & Doorstep)' },
+                        { label: 'Birmingham', val: 'Birmingham (West Midlands / Coventry / Solihull)' },
+                        { label: 'Manchester', val: 'Manchester (Greater Manchester / Salford / Trafford)' },
+                        { label: 'Leeds', val: 'Leeds (West Yorkshire / Bradford)' },
+                        { label: 'Milton Keynes', val: 'Milton Keynes (Buckinghamshire / Bedford / Luton)' },
+                        { label: 'Glasgow', val: 'Glasgow / Edinburgh (Scotland Metro Hub)' },
+                      ].map((chip) => (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => setDeliveryCity(chip.val)}
+                          className={`text-[10px] px-2 py-0.5 rounded-full border transition cursor-pointer ${
+                            deliveryCity.startsWith(chip.label)
+                              ? 'bg-emerald-800 text-white border-emerald-800 font-bold'
+                              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
