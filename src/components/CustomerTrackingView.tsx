@@ -29,12 +29,14 @@ interface CustomerTrackingViewProps {
 }
 
 const STAGES = [
-  { key: 'submitted', label: '1. Request Submitted', desc: 'Received by UK sourcing team' },
-  { key: 'sourcing', label: '2. Sourcing in UK', desc: 'Checking verified retailers' },
-  { key: 'quoted', label: '3. Quotation Issued', desc: 'Transparent landed cost ready' },
-  { key: 'approved', label: '4. Approved & Paid', desc: 'Pre-funded in Naira' },
-  { key: 'purchased', label: '5. Purchased & Inspected', desc: 'Receipt & QC photos logged' },
-  { key: 'dispatched', label: '6. Dispatched to Nigeria', desc: 'Air cargo & doorstep transit' },
+  { key: 'submitted', label: '1. Order Received', desc: 'London queue logged' },
+  { key: 'purchased', label: '2. Purchased', desc: 'Official UK store receipt' },
+  { key: 'warehouse', label: '3. UK Warehouse', desc: 'Arrived London hub' },
+  { key: 'quality_checked', label: '4. Quality Checked', desc: '5-point check & photos' },
+  { key: 'dispatched', label: '5. Dispatched', desc: 'Air cargo flight active' },
+  { key: 'in_nigeria', label: '6. Arrived Nigeria', desc: 'DDP customs cleared' },
+  { key: 'out_for_delivery', label: '7. Out for Delivery', desc: 'Local rider transit' },
+  { key: 'delivered', label: '8. Delivered', desc: 'Doorstep handover' },
 ];
 
 export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
@@ -104,7 +106,29 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
   };
 
   const getStageIndex = (status: CustomerRequest['status']) => {
-    return STAGES.findIndex((s) => s.key === status);
+    switch (status) {
+      case 'submitted':
+      case 'sourcing':
+      case 'quoted':
+        return 0; // 1. Order Received / Sourcing
+      case 'approved':
+      case 'purchased':
+        return 1; // 2. Purchased & Invoiced
+      case 'warehouse':
+        return 2; // 3. Received at UK Warehouse
+      case 'quality_checked':
+        return 3; // 4. Quality Checked
+      case 'dispatched':
+        return 4; // 5. Dispatched to Nigeria
+      case 'in_nigeria':
+        return 5; // 6. Arrived in Nigeria
+      case 'out_for_delivery':
+        return 6; // 7. Out for Delivery
+      case 'delivered':
+        return 7; // 8. Delivered
+      default:
+        return 0;
+    }
   };
 
   const currentStageIndex = activeRequest ? getStageIndex(activeRequest.status) : 0;
@@ -245,45 +269,50 @@ export const CustomerTrackingView: React.FC<CustomerTrackingViewProps> = ({
           </div>
         </div>
 
-        {/* 6-Stage Progress Stepper */}
-        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-4">Fulfillment Journey</div>
+        {/* 8-Stage Progress Stepper */}
+        <div className="p-6 border-b border-stone-100 bg-[#FAF8F5]">
+          <div className="text-xs font-bold uppercase tracking-wider text-stone-600 mb-4 flex items-center justify-between">
+            <span>Fulfillment Journey (8-Stage Transparent Tracking)</span>
+            <span className="text-[11px] font-semibold text-[#102B2A]">
+              Stage {currentStageIndex + 1} of 8: {STAGES[currentStageIndex].label.split('. ')[1]}
+            </span>
+          </div>
 
           <div className="relative">
-            {/* Connecting line */}
-            <div className="hidden sm:block absolute top-4 left-4 right-4 h-0.5 bg-slate-200 -z-0">
+            {/* Connecting line on desktop */}
+            <div className="hidden lg:block absolute top-4 left-6 right-6 h-0.5 bg-stone-200 -z-0">
               <div
-                className="h-full bg-emerald-600 transition-all duration-500"
+                className="h-full bg-[#102B2A] transition-all duration-500"
                 style={{ width: `${(currentStageIndex / (STAGES.length - 1)) * 100}%` }}
               ></div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 relative z-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 relative z-10">
               {STAGES.map((stage, idx) => {
                 const isPassed = idx < currentStageIndex;
                 const isCurrent = idx === currentStageIndex;
                 return (
-                  <div key={stage.key} className="flex sm:flex-col items-center sm:text-center gap-2 sm:gap-1.5">
+                  <div key={stage.key} className="flex flex-col items-center text-center p-2 rounded-xl transition bg-white/70 lg:bg-transparent border lg:border-0 border-stone-200/60">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition shrink-0 ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition shrink-0 mb-1.5 ${
                         isPassed
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-[#102B2A] text-[#D9B77A]'
                           : isCurrent
-                          ? 'bg-slate-900 text-white ring-4 ring-slate-200'
-                          : 'bg-white border-2 border-slate-300 text-slate-400'
+                          ? 'bg-[#102B2A] text-white ring-4 ring-[#D9B77A]/40 shadow-sm'
+                          : 'bg-white border-2 border-stone-300 text-stone-400'
                       }`}
                     >
-                      {isPassed ? <Check className="w-4 h-4" /> : idx + 1}
+                      {isPassed ? <Check className="w-4 h-4 text-[#D9B77A]" /> : idx + 1}
                     </div>
-                    <div>
-                      <div
-                        className={`text-xs font-semibold ${
-                          isCurrent ? 'text-slate-900' : isPassed ? 'text-emerald-700' : 'text-slate-400'
-                        }`}
-                      >
-                        {stage.label.split('. ')[1]}
-                      </div>
-                      <div className="text-[10px] text-slate-500 hidden sm:block">{stage.desc}</div>
+                    <div
+                      className={`text-[11px] font-bold leading-tight ${
+                        isCurrent ? 'text-[#102B2A]' : isPassed ? 'text-stone-800' : 'text-stone-400'
+                      }`}
+                    >
+                      {stage.label.split('. ')[1]}
+                    </div>
+                    <div className="text-[9.5px] text-stone-500 mt-0.5 hidden sm:block leading-tight">
+                      {stage.desc}
                     </div>
                   </div>
                 );

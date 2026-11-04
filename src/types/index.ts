@@ -6,7 +6,12 @@ export type RequestStatus =
   | 'quoted'
   | 'approved'
   | 'purchased'
-  | 'dispatched';
+  | 'warehouse'
+  | 'quality_checked'
+  | 'dispatched'
+  | 'in_nigeria'
+  | 'out_for_delivery'
+  | 'delivered';
 
 export interface ProductItem {
   id: string;

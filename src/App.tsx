@@ -12,23 +12,41 @@ import {
   KeyRound,
   CheckCircle2,
   RefreshCw,
+  Calculator,
+  Briefcase,
+  Home,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { CustomerRequest, RecommendedStore } from './types';
 import { getStoredRequests, BENCHMARK_FX_RATE } from './services/storage';
 import { getFxState, subscribeFxState, refreshLiveFxRate, FxRateState } from './services/fxService';
-import { CustomerRequestForm } from './components/CustomerRequestForm';
+import { HomeHeroAndPortal } from './components/HomeHeroAndPortal';
+import { BuyForMeView } from './components/BuyForMeView';
+import { SmartShippingCalculator } from './components/SmartShippingCalculator';
+import { BusinessSourcingView } from './components/BusinessSourcingView';
 import { CustomerTrackingView } from './components/CustomerTrackingView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { RecommendedSitesDirectory } from './components/RecommendedSitesDirectory';
 import { ADMIN_ACCESS_PASSCODE } from './config/sheetsConfig';
 import { UK2NaijaLogo } from './components/UK2NaijaLogo';
 
+export type ActiveTab = 'home' | 'buy-for-me' | 'calculator' | 'shop' | 'track' | 'business' | 'admin';
+
 export default function App() {
   const [requests, setRequests] = useState<CustomerRequest[]>([]);
-  const [activeTab, setActiveTab] = useState<'submit' | 'stores' | 'track' | 'admin'>('submit');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [selectedRequestId, setSelectedRequestId] = useState<string>('UK2N-4821');
   const [initialStore, setInitialStore] = useState<RecommendedStore | null>(null);
   const [initialItemName, setInitialItemName] = useState<string | undefined>(undefined);
+
+  // Cross-component state transfers
+  const [pendingEstimate, setPendingEstimate] = useState<{
+    category: string;
+    ukPriceGbp: number;
+    weightKg: number;
+    deliveryCity: string;
+    totalNgn: number;
+  } | null>(null);
 
   // Operator / Admin Security State
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
@@ -85,6 +103,8 @@ export default function App() {
   const handleRequestSubmitted = (newReq: CustomerRequest) => {
     setRequests((prev) => [newReq, ...prev.filter((r) => r.id !== newReq.id)]);
     setSelectedRequestId(newReq.id);
+    setActiveTab('track');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenTrackView = (requestId: string) => {
@@ -96,13 +116,25 @@ export default function App() {
   const handleSelectStoreForRequest = (store: RecommendedStore, specificItem?: string) => {
     setInitialStore(store);
     setInitialItemName(specificItem);
-    setActiveTab('submit');
+    setActiveTab('buy-for-me');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleClearInitialStore = () => {
-    setInitialStore(null);
-    setInitialItemName(undefined);
+  const handleProceedFromCalculator = (estimateData: {
+    category: string;
+    ukPriceGbp: number;
+    weightKg: number;
+    deliveryCity: string;
+    totalNgn: number;
+  }) => {
+    setPendingEstimate(estimateData);
+    setActiveTab('buy-for-me');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleQuickUrlSubmit = (url: string) => {
+    setActiveTab('buy-for-me');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePinSubmit = (e: React.FormEvent) => {
@@ -123,8 +155,7 @@ export default function App() {
   const handleExitAdmin = () => {
     setIsAdminMode(false);
     sessionStorage.removeItem('uk2n_admin_session');
-    setActiveTab('submit');
-    // Clear URL parameters if any
+    setActiveTab('home');
     if (window.location.search.includes('admin') || window.location.hash.includes('admin')) {
       window.history.replaceState(null, '', window.location.pathname);
     }
@@ -134,19 +165,19 @@ export default function App() {
   const inSourcingCount = requests.filter((r) => r.status === 'submitted' || r.status === 'sourcing').length;
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-900 flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 flex flex-col font-sans antialiased">
       {/* Operator Mode Active Alert Banner (Only visible when staff is logged in) */}
       {isAdminMode && (
-        <div className="bg-amber-500 text-slate-950 px-4 py-1.5 text-xs font-semibold border-b border-amber-600 shadow-sm">
+        <div className="bg-amber-500 text-stone-950 px-4 py-1.5 text-xs font-semibold border-b border-amber-600 shadow-sm">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
-              <span>UK2Naija Operator Console Active · UK Sourcing Desk Mode</span>
+              <span className="w-2 h-2 rounded-full bg-stone-950 animate-ping"></span>
+              <span>UK2Naija Operator Console Active · London Sourcing Desk</span>
             </div>
             <button
               type="button"
               onClick={handleExitAdmin}
-              className="px-2.5 py-0.5 rounded bg-slate-950 text-white text-[11px] font-bold hover:bg-slate-800 transition cursor-pointer"
+              className="px-2.5 py-0.5 rounded bg-stone-950 text-white text-[11px] font-bold hover:bg-stone-800 transition cursor-pointer"
             >
               Exit Operator Mode
             </button>
@@ -155,10 +186,10 @@ export default function App() {
       )}
 
       {/* Top Banner: Currency Benchmark & Direct WhatsApp Concierge */}
-      <div className="bg-slate-950 text-slate-300 text-[11px] py-1.5 px-4 border-b border-slate-800">
+      <div className="bg-[#102B2A] text-stone-300 text-[11px] py-1.5 px-4 border-b border-[#263A35]">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+            <span className="flex items-center gap-1.5 text-[#D9B77A] font-semibold">
               <span className={`w-1.5 h-1.5 rounded-full ${isRefreshingFx ? 'bg-amber-400 animate-spin' : 'bg-emerald-400 animate-pulse'}`}></span>
               <span>Live FX Benchmark: £1.00 = ₦{fxState.rate.toLocaleString()}</span>
             </span>
@@ -174,14 +205,14 @@ export default function App() {
                 }
               }}
               title="Click to check prevailing market FX rate"
-              className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 hover:border-emerald-500 text-slate-300 hover:text-emerald-300 flex items-center gap-1 transition cursor-pointer"
+              className="text-[10px] px-1.5 py-0.5 rounded bg-[#263A35] border border-white/10 hover:border-[#D9B77A] text-stone-300 hover:text-[#D9B77A] flex items-center gap-1 transition cursor-pointer"
             >
-              <RefreshCw className={`w-2.5 h-2.5 ${isRefreshingFx ? 'animate-spin text-emerald-400' : 'text-slate-400'}`} />
+              <RefreshCw className={`w-2.5 h-2.5 ${isRefreshingFx ? 'animate-spin text-[#D9B77A]' : 'text-stone-400'}`} />
               <span>{isRefreshingFx ? 'Updating...' : 'Live Feed'}</span>
             </button>
 
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <span className="text-slate-400 hidden sm:inline">
+            <span className="text-white/20 hidden sm:inline">|</span>
+            <span className="text-stone-300 hidden sm:inline">
               Guaranteed DDP to Lagos, Abuja, Kano, Kaduna, Jos & Nationwide
             </span>
           </div>
@@ -191,9 +222,9 @@ export default function App() {
               href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20am%20looking%20for%20a%20product%20from%20the%20UK."
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 transition"
+              className="text-[#D9B77A] hover:text-white font-semibold flex items-center gap-1 transition"
             >
-              <MessageCircle className="w-3 h-3" />
+              <MessageCircle className="w-3 h-3 text-emerald-400" />
               <span>WhatsApp Concierge</span>
             </a>
           </div>
@@ -201,60 +232,120 @@ export default function App() {
       </div>
 
       {/* Main Navigation Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Stylistic Bidirectional UK2Naija Logo */}
             <div
-              onClick={() => setActiveTab('submit')}
+              onClick={() => {
+                setActiveTab('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="cursor-pointer select-none py-1"
             >
               <UK2NaijaLogo variant="default" size="md" />
             </div>
 
-            {/* Navigation Tabs (Customer Facing by default) */}
-            <nav className="flex items-center gap-1 sm:gap-2">
+            {/* Navigation Tabs */}
+            <nav className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-1">
               <button
                 type="button"
-                onClick={() => setActiveTab('submit')}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === 'submit'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                onClick={() => {
+                  setActiveTab('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'home'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                 }`}
               >
-                <ShoppingBag className="w-4 h-4" />
-                <span className="hidden sm:inline">Submit Request</span>
-                <span className="sm:hidden">Request</span>
+                <Home className="w-3.5 h-3.5" />
+                <span>Home</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setActiveTab('stores')}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === 'stores'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                onClick={() => {
+                  setActiveTab('buy-for-me');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'buy-for-me'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                 }`}
               >
-                <Store className="w-4 h-4" />
-                <span>Some Retailers</span>
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Buy for Me</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setActiveTab('track')}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 relative cursor-pointer ${
+                onClick={() => {
+                  setActiveTab('calculator');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'calculator'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                }`}
+              >
+                <Calculator className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Ship Calculator</span>
+                <span className="sm:hidden">Calculator</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('shop');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'shop'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                }`}
+              >
+                <Store className="w-3.5 h-3.5" />
+                <span>Shop Stores</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('business');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  activeTab === 'business'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                }`}
+              >
+                <Briefcase className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Business Sourcing</span>
+                <span className="sm:hidden">Business</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('track');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 relative cursor-pointer shrink-0 ${
                   activeTab === 'track'
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-[#102B2A] text-white shadow-xs'
+                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                 }`}
               >
-                <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Track Request</span>
-                <span className="sm:hidden">Track</span>
+                <Search className="w-3.5 h-3.5" />
+                <span>Track</span>
                 {pendingQuoteCount > 0 && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-2 right-1.5"></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 right-1"></span>
                 )}
               </button>
 
@@ -262,16 +353,19 @@ export default function App() {
               {isAdminMode && (
                 <button
                   type="button"
-                  onClick={() => setActiveTab('admin')}
-                  className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 relative cursor-pointer border ${
+                  onClick={() => {
+                    setActiveTab('admin');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 relative cursor-pointer border shrink-0 ${
                     activeTab === 'admin'
                       ? 'bg-amber-600 border-amber-600 text-white shadow-xs'
                       : 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
                   }`}
-                  title="UK Sourcing Team Console"
+                  title="London Sourcing Team Console"
                 >
-                  <Sliders className="w-4 h-4 text-amber-950" />
-                  <span className="font-bold">Sourcing Admin</span>
+                  <Sliders className="w-3.5 h-3.5 text-amber-950" />
+                  <span className="font-bold">Admin</span>
                   {inSourcingCount > 0 && (
                     <span className="px-1.5 py-0.2 rounded-full bg-amber-900 text-white text-[10px] font-bold">
                       {inSourcingCount}
@@ -286,20 +380,40 @@ export default function App() {
 
       {/* Main App Content Viewport */}
       <main className="grow">
-        {activeTab === 'submit' && (
-          <CustomerRequestForm
-            onRequestSubmitted={handleRequestSubmitted}
-            onOpenTrackView={handleOpenTrackView}
-            onOpenRecommendedSitesTab={() => setActiveTab('stores')}
-            initialStore={initialStore}
-            initialItemName={initialItemName}
-            onClearInitialStore={handleClearInitialStore}
+        {activeTab === 'home' && (
+          <HomeHeroAndPortal
+            onNavigateToTab={(tab) => {
+              setActiveTab(tab);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onQuickUrlSubmit={handleQuickUrlSubmit}
           />
         )}
 
-        {activeTab === 'stores' && (
+        {activeTab === 'buy-for-me' && (
+          <BuyForMeView
+            initialEstimate={pendingEstimate}
+            onRequestSubmitted={handleRequestSubmitted}
+            onOpenTrackView={handleOpenTrackView}
+          />
+        )}
+
+        {activeTab === 'calculator' && (
+          <SmartShippingCalculator
+            onProceedToBuyForMe={handleProceedFromCalculator}
+          />
+        )}
+
+        {activeTab === 'shop' && (
           <RecommendedSitesDirectory
             onSelectStoreForRequest={handleSelectStoreForRequest}
+          />
+        )}
+
+        {activeTab === 'business' && (
+          <BusinessSourcingView
+            onRequestSubmitted={handleRequestSubmitted}
+            onOpenTrackView={handleOpenTrackView}
           />
         )}
 
@@ -322,7 +436,7 @@ export default function App() {
       </main>
 
       {/* Professionally Appealing, Customer-Focused Footer */}
-      <footer className="bg-slate-900 text-slate-400 text-xs py-12 border-t border-slate-800 mt-14">
+      <footer className="bg-[#102B2A] text-stone-400 text-xs py-14 border-t border-[#263A35] mt-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
             {/* Column 1: Brand & Identity */}
@@ -330,19 +444,18 @@ export default function App() {
               <div className="mb-3">
                 <UK2NaijaLogo variant="light" size="md" />
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-                Your personal digital UK shopping assistant. Tell us what you need from verified British retailers, and we
-                source, inspect, and deliver directly to your doorstep in Nigeria.
+              <p className="text-[11px] text-stone-300 leading-relaxed mb-3">
+                Shop freely. Source confidently. Deliver seamlessly. A smarter bridge between UK shopping and Nigerian customers, individuals, and businesses.
               </p>
-              <div className="text-[10px] text-emerald-400 font-mono">
+              <div className="text-[10px] text-[#D9B77A] font-mono">
                 UK Limited Entity · Reg. SIC 47910 & 52290
               </div>
             </div>
 
-            {/* Column 2: Core Customer Guarantees */}
+            {/* Column 2: Customer Commitments */}
             <div>
               <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Customer Commitments</h4>
-              <ul className="space-y-2 text-[11px] text-slate-300">
+              <ul className="space-y-2 text-[11px] text-stone-300">
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <span>100% Genuine British Provenance</span>
@@ -362,53 +475,73 @@ export default function App() {
               </ul>
             </div>
 
-            {/* Column 3: How It Works */}
+            {/* Column 3: The 3 Customer Groups */}
             <div>
-              <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">How It Works</h4>
-              <ol className="space-y-2 text-[11px] text-slate-300">
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-400 font-mono">1.</span>
-                  <span>Tell us what product you need (link or photo)</span>
+              <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Who We Serve</h4>
+              <ul className="space-y-2 text-[11px] text-stone-300">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('buy-for-me');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition text-left cursor-pointer"
+                  >
+                    <strong>The Everyday Shopper</strong>: Clothes, trainers, baby care & beauty
+                  </button>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-400 font-mono">2.</span>
-                  <span>Receive an itemized landed quote in Naira</span>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('calculator');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition text-left cursor-pointer"
+                  >
+                    <strong>Busy Professionals</strong>: Full-service concierge & shipping
+                  </button>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-400 font-mono">3.</span>
-                  <span>Pay securely in Naira (no UK card needed)</span>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('business');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition text-left cursor-pointer"
+                  >
+                    <strong>Business Buyers</strong>: Wholesale stock, clinics & equipment
+                  </button>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-400 font-mono">4.</span>
-                  <span>Inspect London QC photos & receive delivery</span>
-                </li>
-              </ol>
+              </ul>
             </div>
 
             {/* Column 4: Concierge & Direct Contact */}
             <div>
               <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Direct Concierge</h4>
-              <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-                Have questions about sourcing specific products or delivery timelines? Chat directly with our London desk.
+              <p className="text-[11px] text-stone-300 leading-relaxed mb-3">
+                Need help finding a rare item or have an inquiry about bulk orders? Connect directly with our London desk.
               </p>
               <a
                 href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20have%20an%20inquiry%20about%20UK%20sourcing."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 bg-emerald-800/60 hover:bg-emerald-700 text-emerald-200 hover:text-white rounded-xl text-xs font-semibold transition border border-emerald-700"
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#263A35] hover:bg-emerald-900 text-[#D9B77A] hover:text-white rounded-xl text-xs font-semibold transition border border-white/10"
               >
-                <MessageCircle className="w-3.5 h-3.5" />
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
                 <span>WhatsApp Desk (+44 7700 900123)</span>
               </a>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+          <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-stone-400">
             <div>
-              © 2026 UK2Naija. Sourced directly from verified UK merchants to your doorstep in Nigeria.
+              © 2026 UK2Naija. Shop freely. Source confidently. Deliver seamlessly.
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span>Zero Account Creation Needed</span>
+              <span>Zero Foreign Card Limits</span>
               <span>·</span>
               <span>Local Naira Payments</span>
               <span>·</span>
@@ -418,7 +551,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowAdminPinModal(true)}
-                className="text-slate-600 hover:text-slate-400 transition flex items-center gap-1 cursor-pointer ml-1"
+                className="text-stone-500 hover:text-stone-300 transition flex items-center gap-1 cursor-pointer ml-1"
                 title="Staff / Operator Login"
               >
                 <Lock className="w-3 h-3" />
@@ -432,10 +565,10 @@ export default function App() {
       {/* Admin Passcode Modal */}
       {showAdminPinModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-slate-900 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
-                <KeyRound className="w-4 h-4 text-amber-600" />
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-stone-200 text-stone-900 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100 mb-4">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#102B2A]">
+                <KeyRound className="w-4 h-4 text-[#D9B77A]" />
                 <span>UK2Naija Operator Access</span>
               </div>
               <button
@@ -444,50 +577,49 @@ export default function App() {
                   setPinInput('');
                   setPinError('');
                 }}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-stone-400 hover:text-stone-600 p-1 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 mb-4">
-              Enter your staff passcode to unlock the live Sourcing Admin console, Google Sheets hub, and quotation controls.
-            </p>
-
             <form onSubmit={handlePinSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Staff Passcode
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
+                  Operator Passcode
                 </label>
                 <input
                   type="password"
+                  autoFocus
+                  required
                   value={pinInput}
                   onChange={(e) => {
                     setPinInput(e.target.value);
-                    setPinError('');
+                    if (pinError) setPinError('');
                   }}
                   placeholder="Enter staff passcode"
-                  autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono tracking-widest"
+                  className="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-[#102B2A] focus:bg-white text-center font-mono tracking-widest text-lg"
                 />
-                {pinError && (
-                  <p className="text-xs text-rose-600 mt-1 font-medium">{pinError}</p>
-                )}
+                {pinError && <p className="text-xs text-red-600 mt-1">{pinError}</p>}
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowAdminPinModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 cursor-pointer"
+                  onClick={() => {
+                    setShowAdminPinModal(false);
+                    setPinInput('');
+                    setPinError('');
+                  }}
+                  className="px-4 py-2 border border-stone-200 text-stone-700 text-xs font-semibold rounded-xl hover:bg-stone-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-xs transition cursor-pointer"
+                  className="px-4 py-2 bg-[#102B2A] hover:bg-[#1b3d3c] text-white text-xs font-bold rounded-xl transition shadow-xs"
                 >
-                  Unlock Admin
+                  Authenticate
                 </button>
               </div>
             </form>
