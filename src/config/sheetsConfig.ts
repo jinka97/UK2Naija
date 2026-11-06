@@ -1,5 +1,5 @@
 /**
- * UK2Naija Google Sheets Master Integration Configuration
+ * Jamlu Google Sheets Master Integration Configuration
  * 
  * To have ALL visitors on GitHub Pages or production automatically log
  * their product requests into your Google Sheet, paste your deployed 

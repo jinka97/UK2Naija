@@ -20,7 +20,7 @@ import {
 import { CustomerRequest, ProductItem, BudgetOption, RecommendedStore } from '../types';
 import { createNewRequest, generateSampleCopyText, BENCHMARK_FX_RATE } from '../services/storage';
 import { getBenchmarkFxRate, subscribeFxState, FxRateState } from '../services/fxService';
-import { UK2NaijaLogo } from './UK2NaijaLogo';
+import { JamluLogo } from './JamluLogo';
 
 interface CustomerRequestFormProps {
   onRequestSubmitted: (newRequest: CustomerRequest) => void;
@@ -348,7 +348,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           </span>
 
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            We've Received Your UK2Naija Sourcing Request!
+            We've Received Your Jamlu Sourcing Request!
           </h2>
           <p className="text-slate-600 mb-6 text-sm max-w-md mx-auto">
             Your personal UK sourcing specialist has been notified. We are currently checking verified UK retailers and
@@ -389,7 +389,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
               <div className="pt-2 mt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-emerald-800">
                 <div className="flex items-center gap-1.5 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>Logged in UK2Naija Database</span>
+                  <span>Logged in Jamlu Database</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -403,7 +403,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
             {/* Primary Failsafe Action: Direct WhatsApp Dispatch */}
             <a
               href={`https://wa.me/447700900123?text=${encodeURIComponent(
-                `*UK2NAIJA SOURCING ORDER - NEW SUBMISSION*\n` +
+                `*JAMLU SOURCING ORDER - NEW SUBMISSION*\n` +
                 `----------------------------------------\n` +
                 `*Ref ID:* ${submittedRequest.id}\n` +
                 `*Customer:* ${submittedRequest.customerName}\n` +
@@ -455,7 +455,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
       {/* Hero: Customer Facing Header */}
       <div className="text-center mb-10">
         <div className="mb-5 flex justify-center">
-          <UK2NaijaLogo size="md" />
+          <JamluLogo size="md" />
         </div>
 
         {/* Bidirectional Corridor Switcher */}
@@ -590,7 +590,7 @@ export const CustomerRequestForm: React.FC<CustomerRequestFormProps> = ({
           <span className="font-medium">Need help finding something?</span>
           <span className="text-slate-500">Send us a product link, photo or description on WhatsApp.</span>
           <a
-            href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20need%20help%20finding%20a%20product%20from%20the%20UK%20to%20Nigeria."
+            href="https://wa.me/447700900123?text=Hello%20Jamlu!%20I%20need%20help%20finding%20a%20product%20from%20the%20UK%20to%20Nigeria."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800 underline ml-1"

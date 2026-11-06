@@ -262,7 +262,7 @@ export const BuyForMeView: React.FC<BuyForMeViewProps> = ({
 
   if (submittedOrder) {
     const whatsappText = encodeURIComponent(
-      `Hello UK2Naija! I just submitted a "Buy For Me" request (#${submittedOrder.id}) for: ${submittedOrder.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}. Please issue my quotation in Naira.`
+      `Hello Jamlu! I just submitted a "Buy For Me" request (#${submittedOrder.id}) for: ${submittedOrder.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}. Please issue my quotation in Naira.`
     );
     const whatsappUrl = `https://wa.me/447700900123?text=${whatsappText}`;
 

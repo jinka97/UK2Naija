@@ -1,9 +1,9 @@
-# UK2Naija 🇬🇧 ⇄ 🇳🇬
+# Jamlu 🇬🇧 ⇄ 🇳🇬
 ### Digital UK Shopping & Sourcing Assistant for Nigeria
 
-**UK2Naija** is a demand-led, concierge-style cross-border commerce and sourcing platform that connects shoppers and businesses in Nigeria directly with authentic consumer goods, electronics, baby care, school supplies, fashion, and clinical items sourced from verified United Kingdom retailers. 
+**Jamlu** is a demand-led, concierge-style cross-border commerce and sourcing platform that connects shoppers and businesses in Nigeria directly with authentic consumer goods, electronics, baby care, school supplies, fashion, and clinical items sourced from verified United Kingdom retailers. 
 
-Designed with a forward-looking **bidirectional trade architecture**, UK2Naija bridges the London-to-Lagos/Abuja trade corridor with complete transparency, verified provenance, and door-to-door delivery.
+Designed with a forward-looking **bidirectional trade architecture**, Jamlu bridges the London-to-Lagos/Abuja trade corridor with complete transparency, verified provenance, and door-to-door delivery.
 
 ---
 
@@ -19,7 +19,7 @@ Designed with a forward-looking **bidirectional trade architecture**, UK2Naija b
 
 ## 🔄 Bidirectional Trade Corridor Vision
 
-UK2Naija is architected to facilitate reciprocal commerce between the United Kingdom and Nigeria:
+Jamlu is architected to facilitate reciprocal commerce between the United Kingdom and Nigeria:
 * **UK ➔ Nigeria**: Sourcing high-demand British goods, premium schoolwear, baby nutrition, authentic electronics, and designer fashion directly to Nigerian doorsteps.
 * **Nigeria ➔ UK**: Future-ready infrastructure designed to support outbound artisan crafts, agro-commodities, fashion, and specialty Nigerian products flowing back to diaspora and international markets.
 
@@ -42,24 +42,23 @@ UK2Naija is architected to facilitate reciprocal commerce between the United Kin
 
 ## 🚀 Customer Workflow
 
-### 1. Submit Product Request
-* **Single or Multi-Item Sourcing**: Request one or multiple items in a single submission.
-* **Assisted Search / Link Paste**: Enter a product title, paste a UK retailer link, or describe what the item does and looks like.
-* **Popular Presets**: 1-click presets for top requested UK products (Smiggle school sets, Next pure cotton uniforms, TK Maxx designer fragrances, Apple AirPods Pro, Boots Aptamil formula, and Clarks Desert Boots).
-* **Budget & Delivery Destination**: Specify target budget and destination city (Lagos, Abuja, Port Harcourt, Ibadan, or nationwide).
+### 1. Buy For Me & Smart Link Extraction
+* Paste any UK product link (ASOS, Amazon UK, John Lewis, Boots, Next, Smiggle, Clarks, etc.).
+* Automated product recognition, size/color variant selection, and instant landed Naira estimation.
 
-### 2. Retailer Directory ("Some Retailers")
-* Explore curated British merchants.
-* Use **"Request from this Store"** to pre-fill the order form with the store catalog reference.
+### 2. Smart Shipping & Landed Cost Calculator
+* Estimate total landed costs before committing, including volumetric weight checks ($L \times W \times H / 6000$) and 70/30 milestone split payments.
 
 ### 3. Transparent Order Tracking
-Track your item across the 6-stage lifecycle:
-1. `1. Request Submitted` (Received by London sourcing team)
-2. `2. Sourcing in UK` (Merchant stock and pricing verified)
-3. `3. Quotation Issued` (Transparent itemized landed cost in Naira)
-4. `4. Approved & Paid` (Customer approved and funded order)
-5. `5. Purchased & Inspected` (London store receipt & QC inspection photos logged)
-6. `6. Dispatched to Nigeria` (Air cargo master waybill & doorstep courier tracking)
+Track your item across the 8-stage lifecycle:
+1. `1. Order Received` (London queue logged)
+2. `2. Purchased` (Official UK store receipt obtained)
+3. `3. UK Warehouse` (Arrived London hub)
+4. `4. Quality Checked` (5-point physical check & photos uploaded)
+5. `5. Dispatched` (Air cargo flight active)
+6. `6. Arrived Nigeria` (DDP customs cleared at Lagos/Abuja)
+7. `7. Out for Delivery` (Local courier rider transit)
+8. `8. Delivered` (Doorstep handover)
 
 ---
 
@@ -84,4 +83,4 @@ All quotations provide a complete line-item breakdown:
 
 ---
 
-*© 2026 UK2Naija. Genuine British goods sourced directly to your doorstep in Nigeria.*
+*© 2026 Jamlu. Genuine British goods sourced directly to your doorstep in Nigeria.*

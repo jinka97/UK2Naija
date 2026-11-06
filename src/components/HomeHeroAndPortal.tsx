@@ -16,7 +16,7 @@ import {
   Camera,
   Layers,
 } from 'lucide-react';
-import { UK2NaijaLogo } from './UK2NaijaLogo';
+import { JamluLogo } from './JamluLogo';
 import { getBenchmarkFxRate } from '../services/fxService';
 import { TrustAndFaqSection } from './TrustAndFaqSection';
 
@@ -50,7 +50,7 @@ export const HomeHeroAndPortal: React.FC<HomeHeroAndPortalProps> = ({
         <div className="max-w-4xl mx-auto text-center">
           {/* Subtle Trade Corridor Indicator */}
           <div className="mb-6 flex justify-center">
-            <UK2NaijaLogo size="lg" />
+            <JamluLogo size="lg" />
           </div>
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#102B2A]/5 text-[#102B2A] text-xs font-semibold mb-5">
@@ -275,7 +275,7 @@ export const HomeHeroAndPortal: React.FC<HomeHeroAndPortalProps> = ({
         </div>
       </section>
 
-      {/* Card Limits Friction Comparison: Paying Alone vs. UK2Naija */}
+      {/* Card Limits Friction Comparison: Paying Alone vs. Jamlu */}
       <section className="py-12 px-4 sm:px-6 bg-white border-y border-stone-200">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -313,10 +313,10 @@ export const HomeHeroAndPortal: React.FC<HomeHeroAndPortalProps> = ({
               </ul>
             </div>
 
-            {/* The UK2Naija Way */}
+            {/* The Jamlu Way */}
             <div className="p-6 rounded-2xl bg-[#102B2A] text-white border border-[#263A35] shadow-md">
               <div className="text-xs font-bold uppercase tracking-wider text-[#D9B77A] mb-2">
-                With UK2Naija Concierge
+                With Jamlu Concierge
               </div>
               <ul className="space-y-2.5 text-xs text-stone-200">
                 <li className="flex items-start gap-2">

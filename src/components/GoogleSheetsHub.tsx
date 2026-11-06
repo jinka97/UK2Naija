@@ -57,7 +57,7 @@ export const GoogleSheetsHub: React.FC<GoogleSheetsHubProps> = ({ requests, onRe
     setSyncStatus('Testing live transmission to Google Sheets...');
 
     const sample = requests[0] || {
-      id: 'UK2N-TEST',
+      id: 'JAMLU-TEST',
       createdAt: new Date().toISOString(),
       customerName: 'Test Customer',
       whatsappPhone: '+234 800 000 0000',
@@ -96,16 +96,16 @@ export const GoogleSheetsHub: React.FC<GoogleSheetsHubProps> = ({ requests, onRe
   };
 
   const appsScriptCode = `// -----------------------------------------------------------------
-// UK2NAIJA: PRODUCTION GOOGLE SHEETS LIVE ORDERS SINK
+// JAMLU: PRODUCTION GOOGLE SHEETS LIVE ORDERS SINK
 // -----------------------------------------------------------------
 // 1. In Google Sheets: Extensions > Apps Script
 // 2. Paste this code completely, replacing any existing code
 // 3. Click "Deploy" > "New deployment"
 // 4. Select Type: "Web App"
-//    - Description: "UK2Naija Live Orders Webhook"
+//    - Description: "Jamlu Live Orders Webhook"
 //    - Execute as: "Me (your email)"
 //    - Who has access: "Anyone" (crucial for receiving browser requests)
-// 5. Copy the generated Web App URL and paste into UK2Naija Admin
+// 5. Copy the generated Web App URL and paste into Jamlu Admin
 //    OR put it in src/config/sheetsConfig.ts for automatic live logging!
 // -----------------------------------------------------------------
 
@@ -216,8 +216,8 @@ function doPost(e) {
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "online",
-    service: "UK2Naija Google Sheets Webhook Sink",
-    message: "Ready to receive customer request payloads from UK2Naija assistant into UK_Source_Orders_11-2026."
+    service: "Jamlu Google Sheets Webhook Sink",
+    message: "Ready to receive customer request payloads from Jamlu assistant into UK_Source_Orders_11-2026."
   })).setMimeType(ContentService.MimeType.JSON);
 }`;
 
@@ -383,7 +383,7 @@ function doGet(e) {
                     >
                       sheets.new
                     </a>{' '}
-                    and name it <em>"UK2Naija Orders"</em>. The script will automatically log orders into the sheet tab <strong>UK_Source_Orders_11-2026</strong>.
+                    and name it <em>"Jamlu Orders"</em>. The script will automatically log orders into the sheet tab <strong>UK_Source_Orders_11-2026</strong>.
                   </div>
                 </div>
 

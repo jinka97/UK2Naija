@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface UK2NaijaLogoProps {
+interface JamluLogoProps {
   variant?: 'default' | 'compact' | 'light' | 'icon-only';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
+export const JamluLogo: React.FC<JamluLogoProps> = ({
   variant = 'default',
   size = 'md',
   className = '',
@@ -21,14 +21,14 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
   };
 
   const textSizes = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-xl',
+    sm: 'text-base',
+    md: 'text-xl',
+    lg: 'text-2xl',
   };
 
   const subTextSizes = {
-    sm: 'text-[8px]',
-    md: 'text-[9.5px]',
+    sm: 'text-[8.5px]',
+    md: 'text-[10px]',
     lg: 'text-[11px]',
   };
 
@@ -36,10 +36,10 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       {/* Bidirectional Flow Emblem (UK ⇄ Naija) */}
       <div
-        className={`${iconSizes[size]} relative rounded-xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-1 shadow-sm border ${
-          isLight ? 'border-slate-700/60 shadow-slate-950/40' : 'border-slate-800 shadow-slate-900/10'
+        className={`${iconSizes[size]} relative rounded-xl bg-gradient-to-br from-[#102B2A] via-[#162220] to-[#102B2A] p-1 shadow-sm border ${
+          isLight ? 'border-white/10 shadow-black/40' : 'border-[#263A35] shadow-stone-900/10'
         } flex items-center justify-center shrink-0 group overflow-hidden`}
-        title="UK2Naija: Direct Bidirectional UK ⇄ Nigeria Trade Corridor"
+        title="Jamlu: UK ⇄ Nigeria Direct Sourcing & Delivery"
       >
         <svg
           viewBox="0 0 44 44"
@@ -64,7 +64,7 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
             UK
           </text>
 
-          {/* Outbound Arrow: UK ➔ Naija (Emerald Path, flowing Top-Left to Top-Right) */}
+          {/* Outbound Arrow: UK ➔ Naija (Gold/Emerald Flow) */}
           <path
             d="M 12 16.5 C 17 14, 27 14, 32 16.5"
             stroke="url(#emeraldFlow)"
@@ -74,13 +74,13 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
           {/* Top Arrowhead pointing East (➔ Nigeria) */}
           <path
             d="M 29 13.5 L 33 16.5 L 29 19.5"
-            stroke="#10b981"
+            stroke="#D9B77A"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Inbound Arrow: Naija ➔ UK (Azure Counter-flow Path, flowing Bottom-Right to Bottom-Left) */}
+          {/* Inbound Arrow: Naija ➔ UK (Azure Counter-flow Path) */}
           <path
             d="M 32 26.5 C 27 29, 17 29, 12 26.5"
             stroke="url(#azureFlow)"
@@ -113,8 +113,8 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
           {/* Gradients */}
           <defs>
             <linearGradient id="emeraldFlow" x1="12" y1="15" x2="33" y2="16.5" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#34d399" />
-              <stop offset="1" stopColor="#059669" />
+              <stop stopColor="#D9B77A" />
+              <stop offset="1" stopColor="#10b981" />
             </linearGradient>
             <linearGradient id="azureFlow" x1="32" y1="28" x2="11" y2="26.5" gradientUnits="userSpaceOnUse">
               <stop stopColor="#38bdf8" />
@@ -124,18 +124,17 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
         </svg>
       </div>
 
-      {/* Typography: UK2Naija Brand Mark */}
+      {/* Typography: Jamlu Brand Mark */}
       {variant !== 'icon-only' && (
         <div className="flex flex-col">
-          <div className={`flex items-center tracking-tight leading-none ${textSizes[size]}`}>
-            <span className={`font-black ${isLight ? 'text-white' : 'text-slate-900'}`}>UK</span>
-            <span className="font-extrabold text-emerald-500 px-0.5">2</span>
-            <span className={`font-black ${isLight ? 'text-emerald-400' : 'text-emerald-600'}`}>Naija</span>
+          <div className={`flex items-baseline tracking-tight leading-none ${textSizes[size]}`}>
+            <span className={`font-black ${isLight ? 'text-white' : 'text-[#102B2A]'}`}>Jam</span>
+            <span className="font-black text-[#D9B77A]">lu</span>
           </div>
 
           {variant === 'default' && (
-            <p className={`font-medium tracking-tight mt-0.5 flex items-center gap-1 ${subTextSizes[size]} ${
-              isLight ? 'text-slate-400' : 'text-slate-500'
+            <p className={`font-semibold tracking-tight mt-0.5 flex items-center gap-1 ${subTextSizes[size]} ${
+              isLight ? 'text-stone-300' : 'text-stone-600'
             }`}>
               <span>UK ⇄ Nigeria Trade Corridor</span>
             </p>
@@ -145,3 +144,6 @@ export const UK2NaijaLogo: React.FC<UK2NaijaLogoProps> = ({
     </div>
   );
 };
+
+// Aliased export for compatibility
+export const UK2NaijaLogo = JamluLogo;

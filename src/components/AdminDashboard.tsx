@@ -212,7 +212,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const handleGenerateWhatsAppLink = (req: CustomerRequest) => {
     const phone = req.whatsappPhone.replace(/[^0-9]/g, '');
-    let msg = `Hello ${req.customerName}, this is your UK2Naija personal shopping concierge regarding request *${req.id}*.\n\n`;
+    let msg = `Hello ${req.customerName}, this is your Jamlu personal shopping concierge regarding request *${req.id}*.\n\n`;
 
     if (req.status === 'submitted') {
       msg += `We have received your request for "${req.items[0]?.name}" and our London desk is actively checking stock with verified UK retailers.`;
@@ -220,7 +220,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       const q = req.quotation;
       const dep70 = q.splitMilestone?.deposit70Ngn || Math.round(q.totalNgn * 0.7);
       const bal30 = q.splitMilestone?.balance30Ngn || (q.totalNgn - dep70);
-      msg = `🇬🇧 *UK2Naija Sourcing Quotation* 🇳🇬\n` +
+      msg = `🇬🇧 *Jamlu Sourcing Quotation* 🇳🇬\n` +
         `Hello ${req.customerName}! Your official landed cost quote is ready for *${req.id}*.\n\n` +
         `📦 *Item Wishlist:* ${req.items.map((i) => `${i.name || 'UK Product'} (Qty: ${i.quantity})`).join(', ')}\n` +
         `📍 *Destination:* ${req.deliveryCity}\n` +

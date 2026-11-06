@@ -28,14 +28,14 @@ import { CustomerTrackingView } from './components/CustomerTrackingView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { RecommendedSitesDirectory } from './components/RecommendedSitesDirectory';
 import { ADMIN_ACCESS_PASSCODE } from './config/sheetsConfig';
-import { UK2NaijaLogo } from './components/UK2NaijaLogo';
+import { JamluLogo } from './components/JamluLogo';
 
 export type ActiveTab = 'home' | 'buy-for-me' | 'calculator' | 'shop' | 'track' | 'business' | 'admin';
 
 export default function App() {
   const [requests, setRequests] = useState<CustomerRequest[]>([]);
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
-  const [selectedRequestId, setSelectedRequestId] = useState<string>('UK2N-4821');
+  const [selectedRequestId, setSelectedRequestId] = useState<string>('JAMLU-4821');
   const [initialStore, setInitialStore] = useState<RecommendedStore | null>(null);
   const [initialItemName, setInitialItemName] = useState<string | undefined>(undefined);
 
@@ -78,13 +78,16 @@ export default function App() {
       loadRequests();
     };
 
+    window.addEventListener('jamlu_storage_updated', handleStorageUpdate);
     window.addEventListener('uk2n_storage_updated', handleStorageUpdate);
     window.addEventListener('storage', handleStorageUpdate);
 
     // Check if operator mode is requested via URL parameter (?admin=true or #admin) or existing session
     const searchParams = new URLSearchParams(window.location.search);
     const hash = window.location.hash;
-    const sessionAuth = sessionStorage.getItem('uk2n_admin_session') === 'true';
+    const sessionAuth =
+      sessionStorage.getItem('jamlu_admin_session') === 'true' ||
+      sessionStorage.getItem('uk2n_admin_session') === 'true';
 
     if (searchParams.get('admin') === 'true' || hash === '#admin' || sessionAuth) {
       setIsAdminMode(true);
@@ -95,6 +98,7 @@ export default function App() {
 
     return () => {
       unsubFx();
+      window.removeEventListener('jamlu_storage_updated', handleStorageUpdate);
       window.removeEventListener('uk2n_storage_updated', handleStorageUpdate);
       window.removeEventListener('storage', handleStorageUpdate);
     };
@@ -141,7 +145,7 @@ export default function App() {
     e.preventDefault();
     if (pinInput.trim() === ADMIN_ACCESS_PASSCODE) {
       setIsAdminMode(true);
-      sessionStorage.setItem('uk2n_admin_session', 'true');
+      sessionStorage.setItem('jamlu_admin_session', 'true');
       setShowAdminPinModal(false);
       setPinInput('');
       setPinError('');
@@ -154,6 +158,7 @@ export default function App() {
 
   const handleExitAdmin = () => {
     setIsAdminMode(false);
+    sessionStorage.removeItem('jamlu_admin_session');
     sessionStorage.removeItem('uk2n_admin_session');
     setActiveTab('home');
     if (window.location.search.includes('admin') || window.location.hash.includes('admin')) {
@@ -172,7 +177,7 @@ export default function App() {
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-stone-950 animate-ping"></span>
-              <span>UK2Naija Operator Console Active · London Sourcing Desk</span>
+              <span>Jamlu Operator Console Active · London Sourcing Desk</span>
             </div>
             <button
               type="button"
@@ -219,7 +224,7 @@ export default function App() {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20am%20looking%20for%20a%20product%20from%20the%20UK."
+              href="https://wa.me/447700900123?text=Hello%20Jamlu!%20I%20am%20looking%20for%20a%20product%20from%20the%20UK."
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#D9B77A] hover:text-white font-semibold flex items-center gap-1 transition"
@@ -235,7 +240,7 @@ export default function App() {
       <header className="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Stylistic Bidirectional UK2Naija Logo */}
+            {/* Stylistic Jamlu Logo */}
             <div
               onClick={() => {
                 setActiveTab('home');
@@ -243,7 +248,7 @@ export default function App() {
               }}
               className="cursor-pointer select-none py-1"
             >
-              <UK2NaijaLogo variant="default" size="md" />
+              <JamluLogo variant="default" size="md" />
             </div>
 
             {/* Navigation Tabs */}
@@ -442,7 +447,7 @@ export default function App() {
             {/* Column 1: Brand & Identity */}
             <div className="md:col-span-1">
               <div className="mb-3">
-                <UK2NaijaLogo variant="light" size="md" />
+                <JamluLogo variant="light" size="md" />
               </div>
               <p className="text-[11px] text-stone-300 leading-relaxed mb-3">
                 Shop freely. Source confidently. Deliver seamlessly. A smarter bridge between UK shopping and Nigerian customers, individuals, and businesses.
@@ -525,7 +530,7 @@ export default function App() {
                 Need help finding a rare item or have an inquiry about bulk orders? Connect directly with our London desk.
               </p>
               <a
-                href="https://wa.me/447700900123?text=Hello%20UK2Naija!%20I%20have%20an%20inquiry%20about%20UK%20sourcing."
+                href="https://wa.me/447700900123?text=Hello%20Jamlu!%20I%20have%20an%20inquiry%20about%20UK%20sourcing."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#263A35] hover:bg-emerald-900 text-[#D9B77A] hover:text-white rounded-xl text-xs font-semibold transition border border-white/10"
@@ -538,7 +543,7 @@ export default function App() {
 
           <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-stone-400">
             <div>
-              © 2026 UK2Naija. Shop freely. Source confidently. Deliver seamlessly.
+              © 2026 Jamlu. Shop freely. Source confidently. Deliver seamlessly.
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <span>Zero Foreign Card Limits</span>
@@ -569,7 +574,7 @@ export default function App() {
             <div className="flex items-center justify-between pb-3 border-b border-stone-100 mb-4">
               <div className="flex items-center gap-2 font-bold text-sm text-[#102B2A]">
                 <KeyRound className="w-4 h-4 text-[#D9B77A]" />
-                <span>UK2Naija Operator Access</span>
+                <span>Jamlu Operator Access</span>
               </div>
               <button
                 onClick={() => {

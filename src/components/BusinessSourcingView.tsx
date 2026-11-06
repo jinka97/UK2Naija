@@ -94,7 +94,7 @@ export const BusinessSourcingView: React.FC<BusinessSourcingViewProps> = ({
 
   if (submittedRequest) {
     const whatsappText = encodeURIComponent(
-      `Hello UK2Naija B2B Desk! We just submitted a commercial procurement inquiry (#${submittedRequest.id}) on behalf of ${companyName} for: ${requiredItemsDesc.slice(0, 100)}... Please assign our corporate procurement officer.`
+      `Hello Jamlu B2B Desk! We just submitted a commercial procurement inquiry (#${submittedRequest.id}) on behalf of ${companyName} for: ${requiredItemsDesc.slice(0, 100)}... Please assign our corporate procurement officer.`
     );
     const whatsappUrl = `https://wa.me/447700900123?text=${whatsappText}`;
 
@@ -114,7 +114,7 @@ export const BusinessSourcingView: React.FC<BusinessSourcingViewProps> = ({
           </h2>
 
           <p className="text-stone-600 text-sm max-w-md mx-auto mb-6">
-            A dedicated UK2Naija corporate sourcing specialist has been assigned to {companyName}. We are contacting verified UK distributors and preparing your formal commercial pro-forma invoice.
+            A dedicated Jamlu corporate sourcing specialist has been assigned to {companyName}. We are contacting verified UK distributors and preparing your formal commercial pro-forma invoice.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -148,7 +148,7 @@ export const BusinessSourcingView: React.FC<BusinessSourcingViewProps> = ({
       <div className="mb-8 text-center sm:text-left border-b border-stone-200/80 pb-6">
         <div className="text-xs font-semibold uppercase tracking-widest text-[#D9B77A] mb-1.5 flex items-center justify-center sm:justify-start gap-1.5">
           <Briefcase className="w-3.5 h-3.5 text-[#D9B77A]" />
-          <span>UK2Naija Business & Corporate Sourcing</span>
+          <span>Jamlu Business & Corporate Sourcing</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#102B2A] tracking-tight">
           Procure Wholesale Equipment, Spares & Stock from the UK.

@@ -29,7 +29,7 @@ const FAQS: FaqItem[] = [
     category: 'customs',
     question: 'Will I have to pay unexpected customs fees or demurrage when my parcel arrives in Nigeria?',
     answer:
-      'Never. All UK2Naija shipments are strictly Delivered Duty Paid (DDP). Customs duties, airport handling charges, and terminal clearance at Lagos Murtala Muhammed or Abuja Nnamdi Azikiwe International Airports are pre-calculated and cleared by our licensed clearing team. The amount on your quotation is the final amount you pay to your doorstep.',
+      'Never. All Jamlu shipments are strictly Delivered Duty Paid (DDP). Customs duties, airport handling charges, and terminal clearance at Lagos Murtala Muhammed or Abuja Nnamdi Azikiwe International Airports are pre-calculated and cleared by our licensed clearing team. The amount on your quotation is the final amount you pay to your doorstep.',
   },
   {
     category: 'trust',
@@ -74,7 +74,7 @@ export const TrustAndFaqSection: React.FC = () => {
             <span>Built on Total Provenance & Certainty</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#102B2A] tracking-tight">
-            How UK2Naija Removes Cross-Border Shopping Risk
+            How Jamlu Removes Cross-Border Shopping Risk
           </h2>
           <p className="text-stone-600 text-sm sm:text-base max-w-xl mx-auto mt-2">
             No mysteries, no card limits, and no clearance surprises. Here is how we address the common pain points of shopping from the UK.

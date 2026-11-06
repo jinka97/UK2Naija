@@ -14,7 +14,7 @@ export interface FxRateState {
   errorMessage?: string;
 }
 
-const STORAGE_KEY = 'uk2naija_fx_rate_v2';
+const STORAGE_KEY = 'jamlu_fx_rate_v2';
 const DEFAULT_FALLBACK_MARKET_RATE = 2125;
 const DEFAULT_BUFFER_PERCENT = 2.5; // Commercial procurement buffer
 
@@ -29,7 +29,7 @@ function calculateEffectiveRate(marketRate: number, bufferPercent: number): numb
 
 function loadInitialFxState(): FxRateState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('uk2naija_fx_rate_v2');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed.rate === 'number' && parsed.rate > 0) {
@@ -73,6 +73,7 @@ function notifyListeners() {
 
   // Also dispatch window custom event for broad compatibility
   if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('jamlu_fx_updated', { detail: currentFxState }));
     window.dispatchEvent(new CustomEvent('uk2naija_fx_updated', { detail: currentFxState }));
   }
 }

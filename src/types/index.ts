@@ -70,7 +70,7 @@ export interface DispatchInfo {
 }
 
 export interface CustomerRequest {
-  id: string; // e.g. UK2N-4821
+  id: string; // e.g. JAMLU-4821
   createdAt: string;
   customerName: string;
   whatsappPhone: string;
