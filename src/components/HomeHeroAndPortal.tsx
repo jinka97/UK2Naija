@@ -240,37 +240,46 @@ export const HomeHeroAndPortal: React.FC<HomeHeroAndPortalProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative">
-            <span className="text-3xl font-black text-[#D9B77A]/30 absolute top-4 right-4">01</span>
-            <div className="w-10 h-10 rounded-xl bg-[#102B2A] text-[#D9B77A] flex items-center justify-center font-bold text-sm mb-4">
-              Find
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative flex flex-col justify-between overflow-hidden">
+            <span className="text-3xl font-black text-[#D9B77A]/20 absolute top-4 right-4 font-mono select-none pointer-events-none">01</span>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#102B2A] text-[#D9B77A] text-xs font-bold uppercase tracking-wider mb-3.5 border border-[#263A35] shadow-xs w-fit shrink-0 whitespace-nowrap">
+                <Search className="w-3.5 h-3.5 text-[#D9B77A] shrink-0" />
+                <span>Find</span>
+              </div>
+              <h3 className="font-bold text-base text-[#102B2A] mb-2 tracking-tight">Choose what you want</h3>
+              <p className="text-xs text-stone-600 leading-relaxed">
+                Browse any UK retailer (ASOS, Amazon UK, John Lewis, Next, Boots, Clarks, TK Maxx). Copy the product link or tell us what you need.
+              </p>
             </div>
-            <h3 className="font-bold text-base text-[#102B2A] mb-2">Choose what you want</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Browse any UK retailer (ASOS, Amazon UK, John Lewis, Next, Boots, Clarks, TK Maxx). Copy the product link or tell us what you need.
-            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative">
-            <span className="text-3xl font-black text-[#D9B77A]/30 absolute top-4 right-4">02</span>
-            <div className="w-10 h-10 rounded-xl bg-[#102B2A] text-[#D9B77A] flex items-center justify-center font-bold text-sm mb-4">
-              Purchase
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative flex flex-col justify-between overflow-hidden">
+            <span className="text-3xl font-black text-[#D9B77A]/20 absolute top-4 right-4 font-mono select-none pointer-events-none">02</span>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#102B2A] text-[#D9B77A] text-xs font-bold uppercase tracking-wider mb-3.5 border border-[#263A35] shadow-xs w-fit shrink-0 whitespace-nowrap">
+                <ShoppingBag className="w-3.5 h-3.5 text-[#D9B77A] shrink-0" />
+                <span>Purchase</span>
+              </div>
+              <h3 className="font-bold text-base text-[#102B2A] mb-2 tracking-tight">We help you buy</h3>
+              <p className="text-xs text-stone-600 leading-relaxed">
+                Bypass international bank card limits. Pay in Nigerian Naira via bank transfer or card. Choose 100% full pay or a 70% procurement deposit.
+              </p>
             </div>
-            <h3 className="font-bold text-base text-[#102B2A] mb-2">We help you buy</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Bypass international bank card limits. Pay in Nigerian Naira via bank transfer or card. Choose 100% full pay or a 70% procurement deposit.
-            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative">
-            <span className="text-3xl font-black text-[#D9B77A]/30 absolute top-4 right-4">03</span>
-            <div className="w-10 h-10 rounded-xl bg-[#102B2A] text-[#D9B77A] flex items-center justify-center font-bold text-sm mb-4">
-              Receive
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs relative flex flex-col justify-between overflow-hidden">
+            <span className="text-3xl font-black text-[#D9B77A]/20 absolute top-4 right-4 font-mono select-none pointer-events-none">03</span>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#102B2A] text-[#D9B77A] text-xs font-bold uppercase tracking-wider mb-3.5 border border-[#263A35] shadow-xs w-fit shrink-0 whitespace-nowrap">
+                <Plane className="w-3.5 h-3.5 text-[#D9B77A] shrink-0" />
+                <span>Receive</span>
+              </div>
+              <h3 className="font-bold text-base text-[#102B2A] mb-2 tracking-tight">We get it to you</h3>
+              <p className="text-xs text-stone-600 leading-relaxed">
+                Our London warehouse checks quality and uploads photo proof. Shipped via weekly air cargo with 100% DDP customs clearing to your door.
+              </p>
             </div>
-            <h3 className="font-bold text-base text-[#102B2A] mb-2">We get it to you</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Our London warehouse checks quality and uploads photo proof. Shipped via weekly air cargo with 100% DDP customs clearing to your door.
-            </p>
           </div>
         </div>
       </section>
